@@ -1,1 +1,728 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ấn Bản Đặc Biệt 20.10</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
+    <style>
+        /* --- CÀI ĐẶT CHUNG & NÂNG CẤP GIAO DIỆN --- */
+        :root {
+            --font-title: 'Cormorant Garamond', serif;
+            --font-body: 'Lato', sans-serif;
+            --font-script: 'Dancing Script', cursive;
+            --color-primary: #d3af37; /* Màu vàng gold sang trọng */
+            --color-dark: #121212;
+            --color-light: #f8f8f8;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .magazine {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 1.5 / 1; /* Tỉ lệ 3:2 */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            position: relative;
+            perspective: 2500px; /* Tạo không gian 3D */
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--color-light);
+            transform-style: preserve-3d;
+            backface-visibility: hidden; /* Ẩn mặt sau khi xoay */
+            transform-origin: left center; /* Điểm xoay lật trang */
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* --- HIỆU ỨNG LẬT TRANG 3D --- */
+        .page.flipping {
+            animation: flip 1.2s forwards ease-in-out;
+        }
+
+        .page.paged {
+            display: flex;
+            transform: rotateY(-180deg);
+        }
+
+        @keyframes flip {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(-180deg); }
+        }
+
+        /* --- TRANG 1: BÌA TẠP CHÍ --- */
+        .cover {
+            background-color: var(--color-dark);
+            color: #fff;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .cover-content {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .magazine-title {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            margin: 0;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+        }
+
+        .cover-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            margin: 20px 0;
+            border: 8px solid #fff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .headline {
+            font-family: var(--font-title);
+            font-size: 4rem;
+            color: var(--color-primary);
+            margin: 10px 0;
+            line-height: 1.1;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s 0.5s ease-out backwards;
+        }
+
+        .tits {
+            margin-top: 25px;
+            animation: fadeInUp 1s 0.8s ease-out backwards;
+        }
+
+        .tits p {
+            font-size: 0.9rem;
+            margin: 10px 0;
+            border-top: 1px solid #555;
+            padding-top: 10px;
+        }
+
+        .barcode {
+            position: absolute;
+            bottom: -80px;
+            left: 10px;
+            background-color: #fff;
+            padding: 5px;
+        }
+        .price {
+            display: block;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .flip-hint {
+            position: absolute;
+            bottom: -90px;
+            right: 10px;
+            font-size: 1rem;
+            color: #aaa;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- TRANG 2 & 3: FASHIONISTA --- */
+        .fashion-spread {
+            display: flex;
+        }
+        .page-left, .page-right {
+            width: 50%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+        }
+        .page-left {
+            position: relative;
+            padding: 0;
+        }
+        .fashion-main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .quote {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            right: 50px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 30px;
+            font-size: 2rem;
+            font-family: var(--font-script);
+        }
+        .quote span {
+            display: block;
+            text-align: right;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            font-family: var(--font-body);
+            font-style: normal;
+        }
+        .page-right {
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .page-right h2 {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .photo-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .photo-item img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .photo-item p {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* --- TRANG 4: GAME --- */
+        .game-page {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(to bottom, #1d2b64, #f8cdda);
+            color: #fff;
+        }
+        .game-intro h2 {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 0 0 15px var(--color-primary);
+        }
+        #startGameBtn {
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            background-image: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+        #startGameBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        #gameContainer {
+            width: 90%;
+            height: 60%;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(255,255,255,0.3);
+            background: #000;
+        }
+
+        #stage-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff00de, #00ddff, #ffdd00, #ff00de);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            filter: blur(5px);
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #gameCanvas {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+        }
+
+        #microphone {
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 5rem;
+            z-index: 3;
+            text-shadow: 0 0 20px #ffc107;
+            transition: all 0.1s;
+        }
+        #microphone.hit {
+            transform: translateY(-50%) scale(1.3);
+            text-shadow: 0 0 30px #00ffea;
+        }
+        
+        /* Hiệu ứng sóng âm */
+        .shockwave {
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,255,234,0.6) 0%, rgba(0,255,234,0) 70%);
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 2;
+            animation: shockwave-animation 0.5s ease-out;
+        }
+        @keyframes shockwave-animation {
+            from { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            to { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            z-index: 3;
+            font-family: var(--font-title);
+        }
+        #gameResult h3 { font-size: 3.5rem; color: #4caf50; font-family: var(--font-title); }
+
+        .hidden { display: none !important; }
+
+        /* --- TRANG 5 & 6: FAN MAIL --- */
+        .fan-mail {
+            justify-content: center;
+            align-items: center;
+            background: url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg') no-repeat center center;
+            background-size: cover;
+        }
+        .fan-mail-content {
+            width: 90%;
+            max-width: 800px;
+            height: 90%;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .fan-mail-content h2 {
+            text-align: center;
+            font-family: var(--font-title);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .message-list { display: flex; flex-direction: column; gap: 20px; }
+        .message-bubble {
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 70%;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .message-bubble.sender {
+            background: linear-gradient(to top right, #25d366, #128c7e);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        .sender-info {
+            font-size: 0.8rem;
+            color: #eee;
+            text-align: right;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* --- TRANG CUỐI: BÌA SAU --- */
+        .back-cover {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 50px;
+        }
+        .family-photo {
+            width: 70%;
+            max-width: 500px;
+            height: auto;
+            border: 15px solid #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 5px;
+        }
+        .thank-you-note {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            max-width: 600px;
+            color: #333;
+            font-family: var(--font-script);
+        }
+        .credits {
+            margin-top: 20px;
+            color: #777;
+        }
+
+        /* --- Animation bổ sung --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Responsive cho điện thoại --- */
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .magazine {
+                height: 100vh;
+                width: 100vw;
+                box-shadow: none;
+            }
+            .page.active {
+                flex-direction: column;
+                height: auto;
+                overflow-y: scroll;
+                padding-bottom: 50px;
+            }
+            .fashion-spread { flex-direction: column; }
+            .page-left, .page-right { width: 100%; padding: 20px; }
+            .headline { font-size: 2.5rem; }
+            .quote { font-size: 1.2rem; position: relative; bottom: auto; left: auto; right: auto; margin: 20px;}
+            #gameContainer { height: 40vh; }
+            #microphone { font-size: 3rem; }
+            .fan-mail-content { height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="magazine">
+        <section id="page1" class="page cover active">
+            <div class="cover-content">
+                <p class="magazine-title">THE QUEEN</p>
+                <img src="https://via.placeholder.com/600x800.png/ddd/000?text=Thay+Ảnh+Mẹ+Ở+Đây" alt="Ảnh bìa mẹ" class="cover-image">
+                <h1 class="headline">ẤN BẢN ĐẶC BIỆT 20.10</h1>
+                <div class="tits">
+                    <p>GÂY SỐT: Nhan sắc Idol U50 khiến 'chị đẹp đạp gió' cũng phải dè chừng!</p>
+                    <p>ĐỘC QUYỀN: Bật mí bí quyết tạo 'hit' của người phụ nữ quyền lực nhất gia đình.</p>
+                </div>
+                <div class="barcode">
+                    <img src="https://barcode.tec-it.com/barcode.ashx?data=09011980&code=Code128&dpi=96" alt="Barcode ngày sinh">
+                    <span class="price">VÔ GIÁ</span>
+                </div>
+                <div class="flip-hint">Nhấn để lật trang ▶</div>
+            </div>
+        </section>
+
+        <section id="page2" class="page fashion-spread">
+            <div class="page-left">
+                <img src="https://via.placeholder.com/600x800.png/eee/000?text=Ảnh+Trang+2" alt="Ảnh thời trang" class="fashion-main-image">
+                <div class="quote">
+                    <p>"Vẻ đẹp không nằm ở quần áo hàng hiệu, mà ở nụ cười tự tin."</p>
+                    <span>- LE THI NHI -</span>
+                </div>
+            </div>
+            <div class="page-right">
+                <h2>Fashionista U50</h2>
+                <div class="photo-gallery">
+                    <div class="photo-item">
+                        <img src="https://via.placeholder.com/300x400.png/f2f2f2/000?text=Ảnh+1" alt="Ảnh kỷ niệm 1">
+                        <p>Nụ cười tại Đà Lạt, 2024</p>
+                    </div>
+                    <div class="photo-item">
+                        <img src="https://via.placeholder.com/300x400.png/f2f2f2/000?text=Ảnh+2" alt="Ảnh kỷ niệm 2">
+                        <p>Khoảnh khắc đời thường</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page3" class="page game-page">
+            <div class="game-intro">
+                <h2>GOLDEN HITS: THE IDOL CHALLENGE</h2>
+                <p>Mẹ hãy thử tài làm Idol nhé! Dùng phím [CÁCH] hoặc nhấn vào màn hình để bắt trọn nốt nhạc.</p>
+                <button id="startGameBtn">Bắt Đầu Sân Khấu</button>
+            </div>
+            <div id="gameContainer" class="hidden">
+                <div id="stage-background"></div>
+                <div id="score">Điểm: 0</div>
+                <canvas id="gameCanvas"></canvas>
+                <div id="microphone">🎤</div>
+                <audio id="gameMusic" src="https://cdn.pixabay.com/download/audio/2022/08/23/audio_13197771d9.mp3?filename=inspiring-cinematic-ambient-116199.mp3" loop></audio>
+            </div>
+            <div id="gameResult" class="hidden">
+                <h3>XUẤT SẮC!</h3>
+                <p>Màn trình diễn của Idol đã chinh phục hàng triệu trái tim. Mời mẹ lật sang trang tiếp theo!</p>
+            </div>
+        </section>
+
+        <section id="page4" class="page fan-mail">
+             <div class="fan-mail-content">
+                <h2>GÓC FAN HÂM MỘ</h2>
+                <div class="message-list">
+                    <div class="message-bubble sender">
+                        <p>Mẹ ơi, mẹ là người phụ nữ tuyệt vời nhất trong lòng con. Cảm ơn mẹ vì đã luôn ở bên, yêu thương và là nguồn động lực vô tận cho con. Chúc mẹ 20/10 thật nhiều niềm vui và hạnh phúc!</p>
+                        <div class="sender-info">From: Con trai - Fan cứng số 1</div>
+                    </div>
+                    <div class="message-bubble sender" style="transition-delay: 0.2s;">
+                        <p>Mẹ yêu, chúc mừng mẹ nhân ngày 20/10. Con chúc mẹ luôn xinh đẹp, khoẻ mạnh và cười thật nhiều mỗi ngày. Cả nhà yêu mẹ rất nhiều!</p>
+                        <div class="sender-info">From: Con gái</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page5" class="page back-cover">
+            <div class="back-cover-content">
+                <img src="https://via.placeholder.com/800x600.png/ddd/000?text=Ảnh+Gia+Đình" alt="Ảnh cả gia đình" class="family-photo">
+                <p class="thank-you-note">
+                    Cảm ơn 'Idol' vì đã là nguồn cảm hứng và tình yêu vô tận của cả nhà. Chúc mẹ ngày 20/10 luôn xinh đẹp, vui vẻ và hạnh phúc. We love you!
+                </p>
+                <p class="credits">
+                    <strong>Ban biên tập:</strong> Một mình Bi :3
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pages = document.querySelectorAll('.page');
+            let currentPageIndex = 0;
+            let isFlipping = false;
+
+            function goToPage(pageIndex) {
+                if (isFlipping || pageIndex < 0 || pageIndex >= pages.length) return;
+
+                const currentPage = pages[currentPageIndex];
+                const nextPage = pages[pageIndex];
+
+                if (pageIndex > currentPageIndex) { // Lật tới
+                    isFlipping = true;
+                    currentPage.classList.add('flipping');
+                    currentPage.addEventListener('animationend', () => {
+                        isFlipping = false;
+                        currentPage.classList.remove('active', 'flipping');
+                        currentPage.classList.add('paged');
+                        nextPage.classList.add('active');
+                        currentPageIndex = pageIndex;
+                    }, { once: true });
+                }
+                // (Có thể thêm logic lật ngược lại nếu muốn)
+            }
+
+            function nextPage() {
+                if (currentPageIndex === 2 && !gameFinished) {
+                    return;
+                }
+                goToPage(currentPageIndex + 1);
+            }
+
+            document.body.addEventListener('click', (e) => {
+                if (e.target.closest('button, canvas, a, .page-right, .fan-mail-content')) {
+                    return;
+                }
+                nextPage();
+            });
+
+            // --- LOGIC GAME ÂM NHẠC ---
+            const startGameBtn = document.getElementById('startGameBtn');
+            const gameIntro = document.querySelector('.game-intro');
+            const gameContainer = document.getElementById('gameContainer');
+            const gameResult = document.getElementById('gameResult');
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreEl = document.getElementById('score');
+            const microphoneEl = document.getElementById('microphone');
+            const gameMusic = document.getElementById('gameMusic');
+
+            let score = 0;
+            let notes = [];
+            let gameLoop;
+            let gameFinished = false;
+            const hitZone = { x: 0.1, width: 0.1 };
+
+            function resizeCanvas() {
+                canvas.width = gameContainer.clientWidth;
+                canvas.height = gameContainer.clientHeight;
+            }
+
+            startGameBtn.addEventListener('click', () => {
+                gameIntro.classList.add('hidden');
+                gameContainer.classList.remove('hidden');
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                startGame();
+            });
+
+            function startGame() {
+                score = 0;
+                notes = [];
+                gameFinished = false;
+                scoreEl.textContent = `Điểm: 0`;
+                gameMusic.currentTime = 0;
+                gameMusic.play();
+                createNotePattern();
+                gameLoop = requestAnimationFrame(update);
+            }
+
+            const notePatterns = [
+                { time: 1000, type: '❤️' }, { time: 1500, type: '⭐' }, { time: 2000, type: '❤️' },
+                { time: 3000, type: '⭐' }, { time: 3250, type: '⭐' }, { time: 4000, type: '❤️' },
+                { time: 5000, type: '❤️' }, { time: 5500, type: '⭐' }, { time: 6000, type: '❤️' }, { time: 6250, type: '⭐' },
+                { time: 7500, type: '❤️' }, { time: 8000, type: '⭐' }, { time: 8500, type: '❤️' },
+                { time: 10000, type: '⭐' }, { time: 10250, type: '❤️' }, { time: 10500, type: '⭐' },
+            ];
+            let totalNotes = notePatterns.length;
+
+            function createNotePattern() {
+                notePatterns.forEach(pattern => {
+                    setTimeout(() => {
+                        notes.push({
+                            x: canvas.width,
+                            y: canvas.height / 2,
+                            type: pattern.type,
+                            speed: canvas.width / 250, // Tốc độ dựa trên chiều rộng
+                            active: true,
+                            color: pattern.type === '❤️' ? '#ff4757' : '#ffa502'
+                        });
+                    }, pattern.time);
+                });
+            }
+
+            function update() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(0, canvas.height / 2 - 2, canvas.width, 4);
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.fillRect(canvas.width * hitZone.x, 0, canvas.width * hitZone.width, canvas.height);
+
+                let allNotesPassed = true;
+                notes.forEach(note => {
+                    if (note.active) {
+                        allNotesPassed = false;
+                        note.x -= note.speed;
+                        ctx.font = `${canvas.height/10}px Arial`;
+                        ctx.fillStyle = note.color;
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(note.type, note.x, note.y);
+                        if (note.x < 0) {
+                            note.active = false;
+                        }
+                    }
+                });
+
+                if (allNotesPassed && notes.length >= totalNotes) {
+                    endGame();
+                    return;
+                }
+                gameLoop = requestAnimationFrame(update);
+            }
+
+            function createShockwave() {
+                const shockwave = document.createElement('div');
+                shockwave.classList.add('shockwave');
+                microphoneEl.parentNode.insertBefore(shockwave, microphoneEl);
+                shockwave.addEventListener('animationend', () => {
+                    shockwave.remove();
+                });
+            }
+
+            function handleHit() {
+                let hitSuccess = false;
+                const hitZoneStart = canvas.width * hitZone.x;
+                const hitZoneEnd = hitZoneStart + canvas.width * hitZone.width;
+                notes.forEach(note => {
+                    if (note.active && note.x > hitZoneStart && note.x < hitZoneEnd) {
+                        hitSuccess = true;
+                        note.active = false;
+                        score += 10;
+                        scoreEl.textContent = `Điểm: ${score}`;
+                    }
+                });
+                microphoneEl.classList.add('hit');
+                if (hitSuccess) {
+                    createShockwave();
+                }
+                setTimeout(() => microphoneEl.classList.remove('hit'), 150);
+            }
+
+            function endGame() {
+                cancelAnimationFrame(gameLoop);
+                gameMusic.pause();
+                gameContainer.classList.add('hidden');
+                gameResult.classList.remove('hidden');
+                gameFinished = true;
+                setTimeout(nextPage, 4000);
+            }
+
+            document.body.onkeydown = function(e) {
+                if (e.code === 'Space' && currentPageIndex === 2 && !gameFinished) {
+                    e.preventDefault();
+                    handleHit();
+                }
+            };
+            
+            gameContainer.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleHit();
+            }, {passive: false});
+
+        });
+    </script>
+</body>
+</html>
