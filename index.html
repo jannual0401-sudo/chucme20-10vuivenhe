@@ -7,112 +7,79 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --font-title: 'Playfair Display', serif;
+            --font-title: 'Playfair+Display', serif;
             --font-body: 'Inter', sans-serif;
             --color-gold: #D4AF37;
             --color-navy: #0A192F;
             --color-light-cream: #F5F5DC;
             --color-text: #333;
         }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: var(--font-body);
-            background-color: #e9e9e9;
+            background-color: #1a1a1a;
             overflow: hidden;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            perspective: 2500px;
         }
-
         .magazine-container {
             width: 100%;
             height: 100%;
             max-width: 1200px;
             max-height: 800px;
             position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
         }
 
-        .magazine {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page {
+        /* --- MÀN RÈM KHÓA --- */
+        .curtain-wrapper {
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: var(--color-light-cream);
-            display: flex;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
-            visibility: hidden;
+            z-index: 1000;
+            overflow: hidden;
         }
-
-        .page.active {
-            opacity: 1;
-            transform: translateX(0);
-            z-index: 10;
-            visibility: visible;
-        }
-        
-        .page.prev {
-            transform: translateX(-100%);
-            z-index: 5;
-        }
-
-        /* --- Màn hình mật khẩu Overlay --- */
-        .password-overlay {
-            position: fixed;
+        .curtain {
+            position: absolute;
             top: 0;
-            left: 0;
+            width: 50%;
+            height: 100%;
+            background: #8B0000 url('https://www.transparenttextures.com/patterns/subtle-grunge.png');
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+            transition: transform 2s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .curtain::before {
+            content: '';
+            position: absolute;
+            top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s, visibility 0.5s;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent 10%, transparent 90%, rgba(0,0,0,0.4));
         }
-        .password-overlay.visible {
-            opacity: 1;
-            visibility: visible;
+        .left-curtain { left: 0; }
+        .right-curtain { right: 0; }
+        .curtain-wrapper.open .left-curtain { transform: translateX(-100%); }
+        .curtain-wrapper.open .right-curtain { transform: translateX(100%); }
+
+        /* --- MẬT KHẨU --- */
+        .password-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px);
+            z-index: 1001; display: flex; justify-content: center; align-items: center;
+            opacity: 1; visibility: visible;
         }
         .password-box {
-            background-color: var(--color-navy);
-            color: white;
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
+            background-color: var(--color-navy); color: white; padding: 40px; border-radius: 10px; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         #password-input {
-            font-size: 2rem;
-            width: 200px;
-            text-align: center;
-            border: none;
-            border-bottom: 2px solid var(--color-gold);
-            background: transparent;
-            color: white;
-            letter-spacing: 20px;
-            margin-top: 20px;
+            font-size: 2rem; width: 200px; text-align: center; border: none;
+            border-bottom: 2px solid var(--color-gold); background: transparent; color: white;
+            letter-spacing: 20px; margin-top: 20px;
         }
         #password-input:focus { outline: none; }
         .password-box.shake { animation: shake 0.5s; }
@@ -121,349 +88,217 @@
             30%, 50%, 70% { transform: translateX(-3px); } 40%, 60% { transform: translateX(3px); }
         }
 
-        /* --- Trang 1: Bìa --- */
-        .cover {
-            background-color: var(--color-navy);
-            color: white;
-            justify-content: center;
-            align-items: center;
-        }
-        .cover-layout {
-            display: flex;
-            width: 90%;
-            height: 80%;
-            align-items: center;
-            gap: 50px;
-        }
-        .cover-image {
-            width: 40%;
+        /* --- HIỆU ỨNG LẬT TRANG 3D --- */
+        .magazine {
+            width: 100%;
             height: 100%;
-            object-fit: cover;
-            border: 10px solid white;
+            position: relative;
+            transform-style: preserve-3d;
+            display: none; /* Ẩn ban đầu */
         }
-        .cover-text {
-            flex: 1;
-            text-align: left;
+        .page {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform-origin: left center;
+            transition: transform 1.5s cubic-bezier(0.65, 0, 0.35, 1);
+            transform-style: preserve-3d;
         }
+        .page-content {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: var(--color-light-cream);
+            backface-visibility: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+        }
+        .page-front { z-index: 1; }
+        .page-back { transform: rotateY(180deg); }
+        .page.flipped { transform: rotateY(-180deg); }
+        .page.static {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* --- Nội dung các trang --- */
+        .cover { justify-content: center; align-items: center; }
+        .cover-layout { display: flex; width: 90%; height: 80%; align-items: center; gap: 50px; }
+        .cover-image { width: 40%; height: 100%; object-fit: cover; border: 10px solid white; }
+        .cover-text { flex: 1; text-align: left; }
         .magazine-title { font-family: var(--font-title); font-size: 2rem; letter-spacing: 5px; opacity: 0.8; }
         .headline { font-family: var(--font-title); font-size: 5rem; color: var(--color-gold); line-height: 1.1; margin: 20px 0; }
-        .tits p { font-size: 1rem; margin-bottom: 10px; }
-        .barcode-area {
-            margin-top: 30px;
-            padding: 15px;
-            background: white;
-            color: black;
-            display: inline-block;
-            text-align: center;
-            cursor: pointer;
-            border: 2px dashed var(--color-gold);
-        }
-        .barcode-area p { font-weight: 600; }
-
-        /* --- Trang 2-3: Fashion --- */
+        
         .fashion-spread { padding: 50px; gap: 50px; }
         .fashion-left, .fashion-right { width: 50%; }
-        .fashion-left { display: flex; flex-direction: column; justify-content: center; }
         .fashion-left h2 { font-family: var(--font-title); font-size: 4rem; color: var(--color-navy); }
         .fashion-left .quote { font-style: italic; font-size: 1.2rem; margin: 20px 0; padding-left: 20px; border-left: 3px solid var(--color-gold); }
         .fashion-right { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: center; }
-        .fashion-right img { width: 100%; height: auto; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: transform 0.3s; }
-        .fashion-right img:hover { transform: scale(1.05); }
+        .fashion-right img { width: 100%; height: auto; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
 
-        /* --- Trang 4: Game --- */
-        .game-page {
-            background-image: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            justify-content: center;
-            align-items: center;
-        }
-        #game-container { position: relative; width: 90%; height: 90%; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
+        .game-page { background-image: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: white; justify-content: center; align-items: center; }
+        #game-container { position: relative; width: 100%; height: 100%; background: rgba(0,0,0,0.3); overflow: hidden; }
         #gameCanvas { width: 100%; height: 100%; }
         #game-score { position: absolute; top: 20px; left: 20px; font-size: 2rem; font-weight: 600; }
-        #game-rules-popup {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; z-index: 100;
-        }
-        #game-rules-popup h3 { font-family: var(--font-title); font-size: 3rem; color: var(--color-gold); }
+        #game-rules-popup, #game-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 100; }
+        #game-rules-popup h3, #game-result h3 { font-family: var(--font-title); font-size: 3rem; color: var(--color-gold); }
         #game-rules-popup ul { list-style: none; padding: 0; margin: 20px 0; font-size: 1.5rem; }
-        #game-rules-popup button {
-            padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 5px;
-            background-color: var(--color-gold); color: var(--color-navy); cursor: pointer; font-weight: 600;
-        }
-        #game-result {
-             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-        }
+        #game-rules-popup button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 5px; background-color: var(--color-gold); color: var(--color-navy); cursor: pointer; font-weight: 600; }
+        #game-result { display: none; }
         #game-result h3 { font-size: 4rem; color: #4CAF50; }
 
-        /* --- Trang 5: Fan Mail --- */
         .fan-mail-page { justify-content: center; align-items: center; background-color: #f0f2f5; }
-        .chat-window {
-            width: 400px;
-            height: 90%;
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-header {
-            padding: 15px; text-align: center; background: var(--color-navy); color: white;
-            border-top-left-radius: 20px; border-top-right-radius: 20px; font-weight: 600;
-        }
+        .chat-window { width: 400px; height: 90%; background-color: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .chat-header { padding: 15px; text-align: center; background: var(--color-navy); color: white; border-top-left-radius: 20px; border-top-right-radius: 20px; font-weight: 600; }
         .message-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message-bubble {
-            padding: 10px 15px; border-radius: 18px; max-width: 70%; line-height: 1.5;
-            opacity: 0; transform: translateY(20px); transition: 0.5s;
-        }
+        .message-bubble { padding: 10px 15px; border-radius: 18px; max-width: 70%; line-height: 1.5; opacity: 0; transform: translateY(20px); transition: 0.5s; }
         .message-bubble.visible { opacity: 1; transform: translateY(0); }
         .message-bubble.sender { background-color: #005C4B; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .typing-indicator { display: flex; gap: 5px; align-items: center; opacity: 0; transition: 0.5s; }
-        .typing-indicator.visible { opacity: 1; }
-        .typing-indicator span { width: 8px; height: 8px; background: #ccc; border-radius: 50%; animation: typing 1s infinite; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-        /* --- Trang cuối --- */
-        .back-cover {
-            flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; background-color: #e8e8e8;
-        }
+        
+        .back-cover { flex-direction: column; justify-content: center; align-items: center; text-align: center; background-color: #e8e8e8; padding: 20px; }
         .back-cover img { width: 50%; border: 15px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .back-cover p { font-family: var(--font-title); font-size: 2rem; margin-top: 30px; color: var(--color-text); }
+        .credits { font-size: 0.9rem; font-style: italic; color: #777; margin-top: 20px; }
 
-        /* --- Navigation --- */
-        .nav-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 50;
-            background: rgba(10, 25, 47, 0.7);
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.3s;
-        }
+        .nav-button { position: absolute; top: 50%; transform: translateY(-50%); z-index: 50; background: rgba(10, 25, 47, 0.7); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background 0.3s; }
         .nav-button:hover { background: var(--color-gold); }
         .prev-btn { left: 20px; }
         .next-btn { right: 20px; }
-        .nav-button.hidden { display: none; }
-
-        /* --- Responsive --- */
-        @media (max-width: 800px) {
-            body { overflow-y: auto; }
-            .magazine-container, .magazine { height: auto; max-height: none; box-shadow: none; }
-            .page {
-                position: relative;
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-                transform: none !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
-            .page:not(.active) { display: none; } /* Show one page at a time */
-            .cover-layout, .fashion-spread { flex-direction: column; height: auto; }
-            .cover-image, .cover-text, .fashion-left, .fashion-right { width: 100%; padding: 20px; }
-            .headline { font-size: 3rem; }
-            #game-container { width: 100%; height: 80vh; border-radius: 0; }
-            .chat-window { width: 100%; height: 80vh; border-radius: 0; }
-        }
-
     </style>
 </head>
 <body>
     <div class="magazine-container">
-        <div class="password-overlay" id="password-overlay">
-            <div class="password-box" id="password-box">
-                <h2>Mật Khẩu Mở Quà</h2>
-                <p>Nhập ngày tháng sinh của mẹ (ddmm)</p>
-                <input type="password" id="password-input" maxlength="4" autofocus autocomplete="off">
+        <div class="curtain-wrapper" id="curtain-wrapper">
+            <div class="curtain left-curtain"></div>
+            <div class="curtain right-curtain"></div>
+            <div class="password-overlay" id="password-overlay">
+                <div class="password-box" id="password-box">
+                    <h2>Mở Khóa Món Quà</h2>
+                    <p>Nhập mật khẩu (ddmm)</p>
+                    <input type="password" id="password-input" maxlength="4" autofocus autocomplete="off">
+                </div>
             </div>
         </div>
 
-        <div class="magazine">
-            <section id="page1" class="page cover active">
-                <div class="cover-layout">
-                    <img src="https://images.placeholders.dev/?width=600&height=800&text=Ảnh%20thần%20thái%20của%20Mẹ&bgColor=#E8E8E8" alt="Ảnh bìa mẹ" class="cover-image">
-                    <div class="cover-text">
-                        <p class="magazine-title">THE QUEEN</p>
-                        <h1 class="headline">Ấn Bản Đặc Biệt 20.10</h1>
-                        <div class="tits">
-                            <p>• GÂY SỐT: Nhan sắc Idol U50</p>
-                            <p>• ĐỘC QUYỀN: Bí quyết của người phụ nữ quyền lực</p>
-                        </div>
-                        <div class="barcode-area" id="unlock-area">
-                            <p>CODE: 09/01/1980</p>
-                            <p>GIÁ: VÔ GIÁ</p>
-                            <p style="color: var(--color-gold); margin-top: 10px;">► NHẤN ĐỂ MỞ KHÓA</p>
+        <div class="magazine" id="magazine">
+            <div class="page static">
+                <div class="page-content cover" style="background-color: var(--color-navy); color: white;">
+                     <div class="cover-layout">
+                        <img src="https://images.placeholders.dev/?width=600&height=800&text=Ảnh+thần+thái+của+Mẹ&bgColor=#E8E8E8" alt="Ảnh bìa mẹ" class="cover-image">
+                        <div class="cover-text">
+                            <p class="magazine-title">THE QUEEN</p>
+                            <h1 class="headline">Ấn Bản 20.10</h1>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section id="page2" class="page fashion-spread">
-                <div class="fashion-left">
-                    <h2>Fashionista U50</h2>
-                    <p class="quote">"Vẻ đẹp không nằm ở quần áo hàng hiệu, mà ở nụ cười tự tin." - [LE THI NHI]</p>
-                    <p>Mỗi khoảnh khắc, mỗi bộ trang phục đều toát lên thần thái của một ngôi sao. Cùng chiêm ngưỡng những hình ảnh đời thường mà vẫn đầy cuốn hút.</p>
-                </div>
-                <div class="fashion-right">
-                    <img src="https://images.placeholders.dev/?width=400&height=500&text=Ảnh%201&bgColor=#F0F0F0" alt="Ảnh 1">
-                    <img src="https://images.placeholders.dev/?width=400&height=500&text=Ảnh%202&bgColor=#F0F0F0" alt="Ảnh 2">
-                </div>
-            </section>
-
-            <section id="page3" class="page game-page">
-                <div id="game-container">
-                    <canvas id="gameCanvas"></canvas>
-                    <div id="game-score">Điểm: 0</div>
-                    <div id="game-rules-popup">
-                        <h3>Idol Challenge</h3>
-                        <ul>
-                            <li>❤️ = +5 Điểm</li>
-                            <li>⭐ = +10 Điểm</li>
-                            <li>💣 = -5 Điểm</li>
-                        </ul>
-                        <p>Di chuyển Micro để hứng quà nhé!<br>Đạt 80 điểm để chiến thắng!</p>
-                        <button id="startGameBtn">Sẵn sàng!</button>
+            <div class="page" id="page-1">
+                <div class="page-content page-front fashion-spread">
+                    <div class="fashion-left">
+                        <h2>Fashionista U50</h2>
+                        <p class="quote">"Vẻ đẹp không nằm ở quần áo hàng hiệu, mà ở nụ cười tự tin."</p>
                     </div>
-                    <div id="game-result">
-                        <h3 id="result-message"></h3>
-                        <p>Màn trình diễn quá xuất sắc!</p>
+                    <div class="fashion-right">
+                        <img src="https://images.placeholders.dev/?width=400&height=500&text=Ảnh+1&bgColor=#F0F0F0" alt="Ảnh 1">
+                        <img src="https://images.placeholders.dev/?width=400&height=500&text=Ảnh+2&bgColor=#F0F0F0" alt="Ảnh 2">
                     </div>
                 </div>
-            </section>
-
-            <section id="page4" class="page fan-mail-page">
-                <div class="chat-window">
-                    <div class="chat-header">Hộp Thư Từ Fan Cứng 💌</div>
-                    <div class="message-area">
-                        <div class="typing-indicator"><span></span><span></span><span></span></div>
+                <div class="page-content page-back game-page">
+                     <div id="game-container">
+                        <canvas id="gameCanvas"></canvas>
+                        <div id="game-score">Điểm: 0</div>
+                        <div id="game-rules-popup">
+                            <h3>Idol Challenge</h3>
+                            <ul><li>❤️ = +5</li><li>⭐ = +10</li><li>💣 = -5</li></ul>
+                            <p>Đạt 80 điểm để chiến thắng!</p>
+                            <button id="startGameBtn">Sẵn sàng!</button>
                         </div>
+                        <div id="game-result"><h3 id="result-message"></h3></div>
+                     </div>
                 </div>
-            </section>
+            </div>
             
-            <section id="page5" class="page back-cover">
-                <img src="https://images.placeholders.dev/?width=800&height=600&text=Ảnh%20cả%20gia%20đình&bgColor=#FFFFFF" alt="Ảnh gia đình">
-                <p>Cảm ơn 'Idol' vì đã là nguồn cảm hứng của cả nhà!</p>
-            </section>
+            <div class="page" id="page-2">
+                <div class="page-content page-front fan-mail-page">
+                    <div class="chat-window">
+                        <div class="chat-header">Hộp Thư Từ Fan Cứng 💌</div>
+                        <div class="message-area"></div>
+                    </div>
+                </div>
+                <div class="page-content page-back back-cover">
+                    <img src="https://images.placeholders.dev/?width=800&height=600&text=Ảnh+cả+gia+đình&bgColor=#FFFFFF" alt="Ảnh gia đình">
+                    <p>Cảm ơn 'Idol' vì đã là nguồn cảm hứng của cả nhà!</p>
+                    <p class="credits">Biên tập: Một mình Bi :3</p>
+                </div>
+            </div>
         </div>
 
-        <button class="nav-button prev-btn hidden" id="prev-btn">◄</button>
-        <button class="nav-button next-btn hidden" id="next-btn">►</button>
+        <button class="nav-button prev-btn" id="prev-btn">◄</button>
+        <button class="nav-button next-btn" id="next-btn">►</button>
 
         <audio id="gameMusic" src="https://cdn.pixabay.com/audio/2022/08/03/audio_51cf531278.mp3" loop></audio>
         <audio id="collectSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_2b33a52239.mp3"></audio>
         <audio id="bombSound" src="https://cdn.pixabay.com/audio/2021/08/04/audio_c483740443.mp3"></audio>
         <audio id="winSound" src="https://cdn.pixabay.com/audio/2022/11/17/audio_88b22280a5.mp3"></audio>
-
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- KHỞI TẠO BIẾN ---
-        const pages = document.querySelectorAll('.page');
+        const magazine = document.getElementById('magazine');
+        const pages = document.querySelectorAll('.page:not(.static)');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        let currentPage = 0;
-        let isLocked = true;
-        
-        const isMobile = window.innerWidth <= 800;
-        if(isMobile) {
-            document.querySelector('.nav-button.prev-btn').style.display = 'none';
-            document.querySelector('.nav-button.next-btn').style.display = 'none';
-        }
+        let currentPageIndex = 0;
 
-        // --- HỆ THỐNG MẬT KHẨU ---
+        function updateZIndexes() {
+            pages.forEach((page, i) => {
+                page.style.zIndex = pages.length - i;
+            });
+        }
+        function flipTo(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= pages.length) return;
+            if (pageIndex > currentPageIndex) {
+                for (let i = currentPageIndex; i < pageIndex; i++) {
+                    pages[i].classList.add('flipped');
+                }
+            } else if (pageIndex < currentPageIndex) {
+                for (let i = currentPageIndex - 1; i >= pageIndex; i--) {
+                    pages[i].classList.remove('flipped');
+                }
+            }
+            currentPageIndex = pageIndex;
+            if(currentPageIndex === 0) document.getElementById('game-rules-popup').style.display = 'flex';
+            if(currentPageIndex === 1) startFanMailAnimation();
+        }
+        
+        prevBtn.addEventListener('click', () => flipTo(currentPageIndex - 1));
+        nextBtn.addEventListener('click', () => flipTo(currentPageIndex + 1));
+        updateZIndexes();
+
+        const curtainWrapper = document.getElementById('curtain-wrapper');
         const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('password-input');
         const passwordBox = document.getElementById('password-box');
-        document.getElementById('unlock-area').addEventListener('click', () => {
-            passwordOverlay.classList.add('visible');
-            passwordInput.focus();
-        });
-
         passwordInput.addEventListener('input', () => {
             if (passwordInput.value === '0901') {
-                passwordOverlay.classList.remove('visible');
-                isLocked = false;
-                if(!isMobile) {
-                    prevBtn.classList.remove('hidden');
-                    nextBtn.classList.remove('hidden');
-                }
+                passwordOverlay.style.display = 'none';
+                curtainWrapper.classList.add('open');
+                setTimeout(() => {
+                    magazine.style.display = 'block';
+                }, 500);
             } else if (passwordInput.value.length >= 4) {
                 passwordBox.classList.add('shake');
-                setTimeout(() => {
-                    passwordBox.classList.remove('shake');
-                    passwordInput.value = '';
-                }, 500);
+                setTimeout(() => { passwordBox.classList.remove('shake'); passwordInput.value = ''; }, 500);
             }
         });
 
-        // --- HỆ THỐNG LẬT TRANG ---
-        function updatePages(direction) {
-            if (isLocked) return;
-            const newPage = currentPage + direction;
-            if (newPage < 0 || newPage >= pages.length) return;
-            
-            pages[currentPage].classList.remove('active');
-            pages[currentPage].classList.add('prev');
-            
-            currentPage = newPage;
-
-            pages.forEach((page, index) => {
-                if (index < currentPage) {
-                    page.classList.remove('active');
-                    page.classList.add('prev');
-                } else if (index === currentPage) {
-                    page.classList.remove('prev');
-                    page.classList.add('active');
-                } else {
-                    page.classList.remove('active', 'prev');
-                }
-            });
-            
-            // Kích hoạt animation/game cho trang hiện tại
-            if(currentPage === 2) document.getElementById('game-rules-popup').style.display = 'flex';
-            if(currentPage === 3) startFanMailAnimation();
-        }
-        
-        if (!isMobile) {
-            nextBtn.addEventListener('click', () => updatePages(1));
-            prevBtn.addEventListener('click', () => updatePages(-1));
-        } else {
-            // Trên mobile, chỉ hiển thị từng trang một khi scroll (đã xử lý bằng CSS)
-            pages.forEach((page, index) => {
-                if(index > 0) page.classList.remove('active');
-            });
-            let mobilePageIndex = 0;
-            document.addEventListener('click', (e) => {
-                if (isLocked) return;
-                 if (e.target.closest('button, canvas, a')) return;
-                
-                if (mobilePageIndex < pages.length - 1) {
-                    pages[mobilePageIndex].classList.remove('active');
-                    mobilePageIndex++;
-                    pages[mobilePageIndex].classList.add('active');
-                    window.scrollTo(0,0);
-                     if(mobilePageIndex === 2) document.getElementById('game-rules-popup').style.display = 'flex';
-                    if(mobilePageIndex === 3) startFanMailAnimation();
-                }
-            });
-        }
-
-        // --- LOGIC GAME ---
         const gameContainer = document.getElementById('game-container');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -471,72 +306,51 @@
         const rulesPopup = document.getElementById('game-rules-popup');
         const resultScreen = document.getElementById('game-result');
         const resultMessage = document.getElementById('result-message');
-
         const gameMusic = document.getElementById('gameMusic');
         const collectSound = document.getElementById('collectSound');
         const bombSound = document.getElementById('bombSound');
         const winSound = document.getElementById('winSound');
-
         let score, player, items, gameLoopId;
 
         function resizeCanvas() {
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
         }
-
         document.getElementById('startGameBtn').addEventListener('click', () => {
             rulesPopup.style.display = 'none';
             resizeCanvas();
             startGame();
         });
-
         function startGame() {
-            score = 0;
-            items = [];
+            score = 0; items = [];
+            gameLoopId = null;
             scoreEl.textContent = `Điểm: ${score}`;
             player = { x: canvas.width / 2 - 25, y: canvas.height - 70, width: 50, height: 60, emoji: '🎤' };
             gameMusic.play();
             const itemInterval = setInterval(spawnItem, 600);
-            
-            function gameLoop() {
-                updateGame();
-                gameLoopId = requestAnimationFrame(gameLoop);
-            }
-            gameLoop();
-            
-            setTimeout(() => {
-                clearInterval(itemInterval);
-            }, 25000); // Game kéo dài 25 giây
+            gameLoopId = requestAnimationFrame(gameLoop);
+            setTimeout(() => { clearInterval(itemInterval); }, 25000);
         }
-        
-        const itemTypes = [
-            { emoji: '❤️', value: 5, type: 'good' }, { emoji: '⭐', value: 10, type: 'good' },
-            { emoji: '💣', value: -5, type: 'bad' }
-        ];
-
+        function gameLoop() {
+            if (!gameLoopId) return;
+            updateGame();
+            requestAnimationFrame(gameLoop);
+        }
+        const itemTypes = [{ emoji: '❤️', value: 5, type: 'good' }, { emoji: '⭐', value: 10, type: 'good' }, { emoji: '💣', value: -5, type: 'bad' }];
         function spawnItem() {
             const type = itemTypes[Math.floor(Math.random() * itemTypes.length)];
-            items.push({
-                x: Math.random() * (canvas.width - 40), y: -40,
-                size: 40, speed: 2 + Math.random() * 3, ...type
-            });
+            items.push({ x: Math.random() * (canvas.width - 40), y: -40, size: 40, speed: 2 + Math.random() * 3, ...type });
         }
-
         function updateGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.font = '50px sans-serif';
-            ctx.fillText(player.emoji, player.x, player.y + player.height);
-
+            ctx.fillText(player.emoji, player.x, player.y);
             items.forEach((item, index) => {
                 item.y += item.speed;
                 ctx.font = `${item.size}px sans-serif`;
                 ctx.fillText(item.emoji, item.x, item.y);
-
                 if (item.y > canvas.height) items.splice(index, 1);
-                
-                if (player.x < item.x + item.size && player.x + player.width > item.x &&
-                    player.y < item.y + item.size && player.y + player.height > item.y) {
-                    
+                if (player.x < item.x + item.size && player.x + player.width > item.x && player.y < item.y + item.size && player.y + player.height > item.y) {
                     score = Math.max(0, score + item.value);
                     scoreEl.textContent = `Điểm: ${score}`;
                     items.splice(index, 1);
@@ -544,56 +358,37 @@
                     if (score >= 80) endGame(true);
                 }
             });
-            if (items.length === 0 && gameIsOver) endGame(score >= 80);
-        }
-
-        function endGame(isWin) {
-            cancelAnimationFrame(gameLoopId);
-            gameMusic.pause();
-            resultScreen.style.display = 'flex';
-            if(isWin) {
-                resultMessage.textContent = "XUẤT SẮC!";
-                winSound.play();
-            } else {
-                resultMessage.textContent = "Cố Lên Nào!";
-                resultMessage.style.color = '#FFC107';
+            if (items.length === 0 && gameLoopId && score < 80) { // Check if game should end
+                 // endGame(false); // Can uncomment to end game if all items passed
             }
         }
-        
-        // Điều khiển player
+        function endGame(isWin) {
+            cancelAnimationFrame(gameLoopId);
+            gameLoopId = null;
+            gameMusic.pause();
+            resultScreen.style.display = 'flex';
+            resultMessage.textContent = isWin ? "XUẤT SẮC!" : "Cố Lên Nào!";
+            if (isWin) winSound.play();
+        }
         document.addEventListener('keydown', e => {
+            if(!player) return;
             if (e.key === 'ArrowLeft' && player.x > 0) player.x -= 20;
             if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) player.x += 20;
         });
         canvas.addEventListener('touchmove', e => {
+            if(!player) return;
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
             player.x = e.touches[0].clientX - rect.left - player.width / 2;
         });
 
-        // --- ANIMATION TIN NHẮN ---
-        const messages = [
-            { text: "Hi Mom!", sticker: false },
-            { text: "🥰", sticker: true },
-            { text: "Chúc mẹ một ngày 20/10 thật nhiều niềm vui và hạnh phúc ạ!", sticker: false },
-            { text: "Mẹ mãi là người phụ nữ tuyệt vời nhất trong lòng con! Yêu mẹ! ❤️", sticker: false }
-        ];
-        
+        const messages = [{ text: "Hi Mom!", sticker: false }, { text: "🥰", sticker: true }, { text: "Chúc mẹ 20/10 vui vẻ!", sticker: false }];
         function startFanMailAnimation() {
             const messageArea = document.querySelector('.message-area');
-            messageArea.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>'; // Reset
-            const typingIndicator = document.querySelector('.typing-indicator');
-            
-            let delay = 0;
-            messages.forEach((msg, index) => {
-                delay += 1000;
+            messageArea.innerHTML = '';
+            let delay = 500;
+            messages.forEach(msg => {
                 setTimeout(() => {
-                    typingIndicator.classList.add('visible');
-                }, delay);
-
-                delay += 1500;
-                setTimeout(() => {
-                    typingIndicator.classList.remove('visible');
                     const bubble = document.createElement('div');
                     bubble.classList.add('message-bubble', 'sender');
                     if (msg.sticker) bubble.style.background = 'none';
@@ -601,6 +396,7 @@
                     messageArea.appendChild(bubble);
                     setTimeout(() => bubble.classList.add('visible'), 100);
                 }, delay);
+                delay += 1500;
             });
         }
     });
