@@ -14,6 +14,7 @@
             --color-gold: #c9ab81;
             --color-dark: #1a1a1a;
             --color-light: #fdfdfd;
+            --color-paper: #f0ede9; /* MÀU GIẤY MỚI */
             --color-text: #333;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,8 +24,20 @@
             background-color: var(--color-dark);
             color: var(--color-text);
             overflow-x: hidden;
+            line-height: 1.6; /* CẢI THIỆN KHẢ NĂNG ĐỌC */
         }
         
+        /* --- HIỆU ỨNG NỀN TINH TẾ --- */
+        .noise-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/noise-lines.png');
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+        }
+
         /* --- MÀN RÈM KHÓA --- */
         #curtain-lock-screen {
             position: fixed;
@@ -62,7 +75,7 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
             z-index: 1001; display: flex; justify-content: center; align-items: center;
-            transition: opacity 1s 2s; /* Delay hiding */
+            transition: opacity 1s 2s;
         }
         #curtain-lock-screen.open .password-overlay { opacity: 0; pointer-events: none; }
         .password-box {
@@ -96,6 +109,7 @@
             width: 100%;
             max-width: 1200px;
             z-index: 2;
+            position: relative; /* Đảm bảo nội dung nổi trên nền */
         }
         .animated {
             opacity: 0;
@@ -120,50 +134,76 @@
         .tits p { font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
 
         /* --- Trang Fashion --- */
-        #fashion-page { background-color: var(--color-light); }
+        #fashion-page { background-color: var(--color-paper); }
         #fashion-page .page-content { display: flex; align-items: center; gap: 5%; }
         .fashion-text { width: 45%; }
         .fashion-text h2 { font-family: var(--font-serif); font-size: 4.5rem; color: var(--color-dark); }
         .fashion-text .quote { font-style: italic; font-size: 1.2rem; margin: 30px 0; padding-left: 20px; border-left: 3px solid var(--color-gold); }
         .fashion-gallery {
-            width: 50%;
-            position: relative;
-            height: 60vh;
+            width: 50%; position: relative; height: 60vh;
         }
         .fashion-gallery img {
-            position: absolute;
-            width: 60%;
+            position: absolute; width: 60%;
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            transition: 0.5s;
+            transition: 0.5s; border: 8px solid white;
         }
         .fashion-gallery img:nth-child(1) { top: 0; left: 0; transform: rotate(-5deg); }
         .fashion-gallery img:nth-child(2) { bottom: 0; right: 0; transform: rotate(8deg); }
         .fashion-gallery:hover img { transform: rotate(0) scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
 
+        /* --- HIỆU ỨNG HOA NỞ --- */
+        #flower-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        .flower {
+            position: absolute;
+            width: 30px; height: 30px;
+            animation: grow-and-fade 2s forwards;
+        }
+        .petal {
+            position: absolute;
+            width: 15px; height: 15px;
+            background: radial-gradient(circle, #f8cdda, #e8a0bf);
+            border-radius: 50% 0;
+            transform-origin: bottom left;
+        }
+        .petal:nth-child(1) { transform: rotate(0deg) translateX(5px); }
+        .petal:nth-child(2) { transform: rotate(60deg) translateX(5px); }
+        .petal:nth-child(3) { transform: rotate(120deg) translateX(5px); }
+        .petal:nth-child(4) { transform: rotate(180deg) translateX(5px); }
+        .petal:nth-child(5) { transform: rotate(240deg) translateX(5px); }
+        .petal:nth-child(6) { transform: rotate(300deg) translateX(5px); }
+
+        @keyframes grow-and-fade {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(0.5); opacity: 0; }
+        }
+
         /* --- Trang Game --- */
         #game-page {
             background-image: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)), url('https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
-            background-attachment: fixed; /* Parallax effect */
-            color: white;
-            text-align: center;
+            background-attachment: fixed; color: white; text-align: center;
+        }
+        /* SỬA LỖI CANH GIỮA */
+        #game-page .page-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         #game-container {
-            width: 90%;
-            height: 80vh;
-            max-width: 1000px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--color-gold);
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
+            width: 90%; height: 80vh; max-width: 1000px;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--color-gold);
+            border-radius: 15px; overflow: hidden; position: relative;
         }
         #gameCanvas { width: 100%; height: 100%; }
         #game-score { position: absolute; top: 20px; left: 30px; font-size: 2.5rem; font-family: var(--font-serif); text-shadow: 0 0 10px black; }
         #game-rules-popup, #game-result {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
         }
         #game-rules-popup h3, #game-result h3 { font-family: var(--font-serif); font-size: 4rem; color: var(--color-gold); }
         #game-rules-popup button {
@@ -173,13 +213,11 @@
         #game-result { display: none; }
 
         /* --- Trang Fan Mail --- */
-        #fanmail-page { background-color: #e5ddd5; }
+        #fanmail-page { background-color: #d1e4dd; /* Đổi màu nền cho hợp */ }
         .chat-window {
-            width: 400px;
-            height: 75vh;
-            background-color: #f0f2f5;
-            border: 10px solid black;
-            border-radius: 40px;
+            width: 400px; height: 75vh;
+            background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Nền WhatsApp */
+            border: 10px solid black; border-radius: 40px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             display: flex; flex-direction: column;
         }
@@ -191,12 +229,53 @@
         
         /* --- Trang Cuối --- */
         #back-cover-page {
-            background-color: var(--color-light);
+            background-color: var(--color-paper);
             text-align: center;
         }
         .back-cover-image { width: 60%; max-width: 700px; border: 20px solid white; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
         .back-cover-text { font-family: var(--font-serif); font-size: 3rem; margin-top: 40px; }
         .credits { font-size: 1rem; font-style: italic; color: #777; margin-top: 20px; }
+
+
+        /* --- RESPONSIVE DESIGN --- */
+        /* Tablet & Desktop nhỏ */
+        @media (max-width: 1024px) {
+            .page { padding: 10vh 5vw; }
+            .headline { font-size: 5rem; }
+            .fashion-text h2 { font-size: 3.5rem; }
+            #game-rules-popup h3, #game-result h3 { font-size: 3rem; }
+        }
+
+        /* Điện thoại */
+        @media (max-width: 768px) {
+            .page { min-height: auto; padding: 15vw 5vw; } /* Chiều cao tự động, padding khác */
+
+            /* Trang bìa */
+            #cover-page .page-content { flex-direction: column; text-align: center; }
+            .cover-image { width: 80%; margin-bottom: 30px; }
+            .cover-text { text-align: center; }
+            .headline { font-size: 4rem; }
+
+            /* Trang Fashion */
+            #fashion-page .page-content { flex-direction: column; }
+            .fashion-text { width: 100%; text-align: center; }
+            .fashion-text .quote { margin: 20px auto; border: none; border-top: 3px solid var(--color-gold); border-bottom: 3px solid var(--color-gold); padding: 15px 0; }
+            .fashion-gallery { width: 100%; height: 50vh; margin-top: 40px; }
+            .fashion-gallery img { width: 65%; }
+
+            /* Trang Game */
+            #game-container { height: 60vh; }
+            #game-rules-popup h3, #game-result h3 { font-size: 2.5rem; }
+            #game-rules-popup p { font-size: 0.9rem; }
+
+            /* Trang Fan Mail */
+            .chat-window { width: 90vw; height: 70vh; }
+
+            /* Trang cuối */
+            .back-cover-image { width: 90%; }
+            .back-cover-text { font-size: 2rem; }
+        }
+
     </style>
 </head>
 <body>
@@ -213,7 +292,7 @@
     </div>
 
     <main id="magazine-content">
-        <section id="cover-page" class="page">
+        <section id="cover-page" class="page noise-bg">
             <div class="page-content">
                 <img src="https://images.placeholders.dev/?width=600&height=800&text=Ảnh%20thần%20thái%20nhất%20của%20Mẹ&bgColor=#cccccc" alt="Ảnh bìa" class="cover-image animated">
                 <div class="cover-text">
@@ -228,7 +307,7 @@
         </section>
 
         <section id="fashion-page" class="page">
-            <div class="page-content">
+            <div id="flower-container"></div> <div class="page-content">
                 <div class="fashion-text">
                     <h2 class="animated">Fashionista</h2>
                     <p class="quote animated delay-1">"Phong cách là cách để nói bạn là ai mà không cần phải tốn một lời."</p>
@@ -304,6 +383,10 @@
                     if (entry.target.id === 'fanmail-page') {
                         startFanMailAnimation();
                     }
+                    if (entry.target.id === 'fashion-page') {
+                        // Kích hoạt hiệu ứng hoa khi trang fashion xuất hiện
+                        activateFlowerEffect();
+                    }
                 }
             });
         }, { threshold: 0.2 });
@@ -325,14 +408,17 @@
         };
         let score, player, items, gameLoopId, itemInterval;
 
+        // TỰ ĐỘNG THAY ĐỔI KÍCH THƯỚC CANVAS
         function resizeCanvas() {
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
         }
+        window.addEventListener('resize', resizeCanvas); // Thêm listener
+        resizeCanvas(); // Gọi lần đầu
 
         document.getElementById('startGameBtn').addEventListener('click', () => {
             rulesPopup.style.display = 'none';
-            resizeCanvas();
+            resizeCanvas(); // Đảm bảo kích thước đúng khi bắt đầu
             startGame();
         });
 
@@ -340,6 +426,7 @@
             score = 0; items = []; gameLoopId = null;
             scoreEl.textContent = `Điểm: ${score}`;
             player = { x: canvas.width / 2 - 25, y: canvas.height - 70, width: 50, height: 60, emoji: '🎤' };
+            audio.music.volume = 0.5;
             audio.music.play();
             itemInterval = setInterval(spawnItem, 500);
             gameLoopId = requestAnimationFrame(gameLoop);
@@ -352,11 +439,11 @@
 
         const itemTypes = [
             { emoji: '❤️', value: 5, type: 'good' }, { emoji: '⭐', value: 10, type: 'good' },
-            { emoji: '💣', value: -5, type: 'bad' }
+            { emoji: '💣', value: -15, type: 'bad' } // Tăng điểm trừ
         ];
 
         function spawnItem() {
-            const type = itemTypes[Math.floor(Math.random() * 2.5)]; // higher chance of good items
+            const type = itemTypes[Math.floor(Math.random() * itemTypes.length)];
             items.push({ x: Math.random() * (canvas.width - 40), y: -40, size: 40, speed: 2 + Math.random() * 3, ...type });
         }
 
@@ -384,21 +471,35 @@
             gameLoopId = null;
             clearInterval(itemInterval);
             audio.music.pause();
+            audio.music.currentTime = 0;
             resultScreen.style.display = 'flex';
             resultMessage.textContent = isWin ? "XUẤT SẮC!" : "Cố Lên Nào!";
             if (isWin) audio.win.play();
+            // Thêm nút chơi lại
+            if (!document.getElementById('replayBtn')) {
+                const replayBtn = document.createElement('button');
+                replayBtn.id = 'replayBtn';
+                replayBtn.textContent = 'Chơi lại';
+                replayBtn.style.cssText = "padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 50px; background: var(--color-gold); color: var(--color-dark); cursor: pointer; font-weight: 600; margin-top: 20px;";
+                replayBtn.onclick = () => {
+                    resultScreen.style.display = 'none';
+                    rulesPopup.style.display = 'flex'; // Hiển thị lại màn hình luật chơi
+                };
+                resultScreen.appendChild(replayBtn);
+            }
         }
-
-        document.addEventListener('keydown', e => {
-            if (!player) return;
-            if (e.key === 'ArrowLeft' && player.x > 0) player.x -= 30;
-            if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) player.x += 30;
-        });
+        
+        // Cải thiện điều khiển
+        function movePlayer(clientX) {
+             if (!player) return;
+             const rect = canvas.getBoundingClientRect();
+             let targetX = clientX - rect.left - player.width / 2;
+             player.x = Math.max(0, Math.min(targetX, canvas.width - player.width)); // Giới hạn di chuyển trong canvas
+        }
+        canvas.addEventListener('mousemove', e => movePlayer(e.clientX));
         canvas.addEventListener('touchmove', e => {
-            if (!player) return;
             e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            player.x = e.touches[0].clientX - rect.left - player.width / 2;
+            movePlayer(e.touches[0].clientX);
         });
 
         // --- FAN MAIL ANIMATION ---
@@ -409,7 +510,7 @@
         ];
         function startFanMailAnimation() {
             const messageArea = document.querySelector('.message-area');
-            if(messageArea.children.length > 0) return; // Prevent re-animating
+            if(messageArea.children.length > 0) return;
             let delay = 500;
             messages.forEach(msg => {
                 setTimeout(() => {
@@ -419,11 +520,50 @@
                     bubble.textContent = msg.text;
                     messageArea.appendChild(bubble);
                     setTimeout(() => bubble.classList.add('visible'), 50);
+                    messageArea.scrollTop = messageArea.scrollHeight;
                 }, delay);
                 delay += 1500;
             });
+        }
+        
+        // --- HIỆU ỨNG HOA NỞ SCRIPT ---
+        const fashionPage = document.getElementById('fashion-page');
+        const flowerContainer = document.getElementById('flower-container');
+        let flowerInterval;
+
+        function createFlower(x, y) {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            for (let i = 0; i < 6; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                flower.appendChild(petal);
+            }
+            flower.style.left = `${x}px`;
+            flower.style.top = `${y}px`;
+            flowerContainer.appendChild(flower);
+            setTimeout(() => flower.remove(), 2000);
+        }
+
+        function activateFlowerEffect() {
+             if (flowerInterval) return; // Chỉ chạy 1 lần
+
+            fashionPage.addEventListener('mousemove', (e) => {
+                 // Lấy vị trí chuột tương đối với trang
+                 const rect = fashionPage.getBoundingClientRect();
+                 const x = e.clientX - rect.left;
+                 const y = e.clientY - rect.top;
+                 createFlower(x, y);
+            });
+            // Tạo hoa ngẫu nhiên
+             flowerInterval = setInterval(() => {
+                 const x = Math.random() * fashionPage.clientWidth;
+                 const y = Math.random() * fashionPage.clientHeight;
+                 createFlower(x, y);
+             }, 500);
         }
     });
     </script>
 </body>
 </html>
+
