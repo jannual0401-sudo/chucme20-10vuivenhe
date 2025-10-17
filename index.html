@@ -16,6 +16,7 @@
             --color-light: #fdfdfd;
             --color-paper: #f0ede9;
             --color-text: #333;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
@@ -25,16 +26,44 @@
             color: var(--color-text);
             overflow-x: hidden;
             line-height: 1.6;
-            cursor: default;
+            cursor: none; /* Ẩn con trỏ mặc định */
         }
         
-        /* Con trỏ chuột tùy chỉnh */
-        .custom-cursor {
-            position: fixed; width: 25px; height: 25px; border: 2px solid var(--color-gold); border-radius: 50%;
-            pointer-events: none; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s; z-index: 9999;
+        /* === NÂNG CẤP: HIỆU ỨNG CON TRỎ CHUỘT === */
+        .cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            border-radius: 50%;
+            transition: transform 0.2s var(--ease-out-expo);
+            will-change: transform;
+        }
+        .cursor.dot {
+            width: 8px; height: 8px; background-color: var(--color-gold);
+            transform: translate(-50%, -50%);
+        }
+        .cursor.outline {
+            width: 40px; height: 40px; border: 2px solid var(--color-gold);
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s var(--ease-out-expo), width 0.3s, height 0.3s;
+        }
+        body:hover .cursor.outline.hidden {
+            width: 0; height: 0;
+        }
+        .click-effect {
+            position: fixed;
+            border: 2px solid var(--color-gold);
+            border-radius: 50%;
+            animation: click-anim 0.5s var(--ease-out-expo) forwards;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        @keyframes click-anim {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
-        /* Màn rèm khóa */
+        /* --- Màn rèm khóa --- */
         #curtain-lock-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2000;
         }
@@ -72,72 +101,38 @@
             30%, 50%, 70% { transform: translateX(-3px); } 40%, 60% { transform: translateX(3px); }
         }
 
-        /* Nút điều khiển nhạc nền */
+        /* --- Nút điều khiển nhạc nền --- */
         #music-control {
             position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background-color: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--color-gold); border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 24px; cursor: pointer; z-index: 1000; backdrop-filter: blur(5px); transition: transform 0.3s, box-shadow 0.3s;
+            font-size: 24px; cursor: none; z-index: 1000; backdrop-filter: blur(5px); transition: transform 0.3s, box-shadow 0.3s;
         }
         #music-control:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--color-gold); }
 
-        /* Cấu trúc trang & Hiệu ứng */
+        /* --- Cấu trúc trang & Hiệu ứng --- */
         .page {
             width: 100%; min-height: 100vh; padding: 10vh 10vw; display: flex; justify-content: center; align-items: center;
-            position: relative; overflow: hidden; transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s;
-            transform: scale(0.9); opacity: 0;
+            position: relative; overflow: hidden; transition: opacity 1.5s var(--ease-out-expo), transform 1.5s var(--ease-out-expo);
+            opacity: 0; transform: translateY(100px);
         }
-        .page.is-visible { transform: scale(1); opacity: 1; }
+        .page.is-visible { opacity: 1; transform: translateY(0); }
         .page-content { width: 100%; max-width: 1200px; z-index: 2; position: relative; }
-        .animated { opacity: 0; transform: translateY(50px); transition: opacity 1s, transform 1s; }
+        .animated { opacity: 0; transform: translateY(50px); transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo); }
         .is-visible .animated { opacity: 1; transform: translateY(0); }
         .animated.delay-1 { transition-delay: 0.3s; }
         .animated.delay-2 { transition-delay: 0.5s; }
         .animated.delay-3 { transition-delay: 0.7s; }
 
-        /* Hiệu ứng Bụi vàng lấp lánh */
-        .sparkle-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1; overflow: hidden;
-        }
-        .sparkle {
-            position: absolute; width: 3px; height: 3px; background-color: var(--color-gold); border-radius: 50%;
-            box-shadow: 0 0 10px var(--color-gold); animation: sparkle-anim 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0;
-        }
-        @keyframes sparkle-anim {
-            0% { transform: scale(0) translateY(0); opacity: 0; }
-            20% { opacity: 1; }
-            80% { transform: scale(1.2) translateY(-100px); opacity: 0.8; }
-            100% { transform: scale(0.5) translateY(-150px); opacity: 0; }
-        }
-
-        /* --- Trang Bìa (NÂNG CẤP) --- */
+        /* --- Trang Bìa --- */
         #cover-page { background-color: var(--color-dark); color: white; }
         #cover-page .page-content { display: flex; align-items: center; gap: 5%; }
         .cover-image { width: 40%; border: 15px solid var(--color-light); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .cover-text { flex: 1; text-align: left; position: relative; height: 100%; }
+        .cover-text { flex: 1; text-align: left; }
         .magazine-title { font-family: var(--font-serif); font-size: 2rem; letter-spacing: 5px; opacity: 0.8; }
         .headline { font-family: var(--font-serif); font-size: 6rem; color: var(--color-gold); line-height: 1.1; margin: 20px 0; }
         .tits p { font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
-        /* === MỚI: Các yếu tố bìa tạp chí === */
-        .special-edition-tag {
-            position: absolute; top: -50px; left: -20px; background: var(--color-gold); color: var(--color-dark);
-            padding: 5px 15px; font-family: var(--font-sans); font-weight: 700; letter-spacing: 2px;
-            transform: rotate(-5deg);
-        }
-        .cover-footer {
-            position: absolute; bottom: -80px; left: 0; width: 100%; display: flex; align-items: flex-end; justify-content: space-between;
-        }
-        .qr-price-group { text-align: left; }
-        .price-tag { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 10px; }
-        .qr-code img { width: 80px; height: 80px; background: white; padding: 5px; }
-        .barcode {
-            width: 150px; height: 60px;
-            background-image: repeating-linear-gradient(to right,
-                var(--color-light) 0, var(--color-light) 2px, transparent 2px, transparent 4px,
-                var(--color-light) 4px, var(--color-light) 7px, transparent 7px, transparent 9px);
-        }
 
-        /* --- Trang Fashion (NÂNG CẤP) --- */
+        /* --- Trang Fashion --- */
         #fashion-page { background-color: var(--color-paper); }
         #fashion-page .page-content { display: flex; align-items: center; gap: 5%; }
         .fashion-text { width: 45%; }
@@ -148,38 +143,38 @@
         }
         .fashion-gallery img {
             position: absolute; width: 60%;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            border: 8px solid white;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s, z-index 0s 0.25s;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2); border: 8px solid white;
+            transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s, z-index 0s 0.25s;
             will-change: transform;
         }
         .fashion-gallery img:nth-child(1) { top: 10%; left: 10%; transform: rotate(-8deg); z-index: 1; }
         .fashion-gallery img:nth-child(2) { bottom: 10%; right: 10%; transform: rotate(10deg); z-index: 2; }
-        /* Lớp CSS mới để JS điều khiển */
         .fashion-gallery img.is-active {
             z-index: 10;
             transform: scale(1.1) rotate(0deg) !important;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s, z-index 0s 0s;
+            transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s, z-index 0s 0s;
         }
 
         /* --- Trang Game --- */
-        #game-page {
-            background-image: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)), url('https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-            background-size: cover; background-attachment: fixed; color: white; text-align: center;
-        }
+        #game-page { background-size: cover; background-attachment: fixed; color: white; text-align: center; }
         #game-page .page-content { display: flex; justify-content: center; align-items: center; }
         #game-container { width: 90%; height: 80vh; max-width: 1000px; background: rgba(0,0,0,0.4); border: 1px solid var(--color-gold); border-radius: 15px; overflow: hidden; position: relative; }
         #gameCanvas { width: 100%; height: 100%; }
         #game-score { position: absolute; top: 20px; left: 30px; font-size: 2.5rem; font-family: var(--font-serif); text-shadow: 0 0 10px black; }
         #game-rules-popup, #game-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         #game-rules-popup h3, #game-result h3 { font-family: var(--font-serif); font-size: 4rem; color: var(--color-gold); }
-        #game-rules-popup button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 50px; background: var(--color-gold); color: var(--color-dark); cursor: pointer; font-weight: 600; margin-top: 20px; transition: transform 0.2s; }
+        #game-rules-popup button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 50px; background: var(--color-gold); color: var(--color-dark); cursor: none; font-weight: 600; margin-top: 20px; transition: transform 0.2s; }
         #game-rules-popup button:hover { transform: scale(1.05); }
         #game-result { display: none; }
+        /* MỚI: Canvas cho pháo hoa */
+        #fireworks-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+        }
 
-        /* --- Trang Fan Mail (NÂNG CẤP) --- */
-        #fanmail-page { background-color: #d1e4dd; display: flex; align-items: center; justify-content: center;}
+        /* --- Trang Fan Mail --- */
+        #fanmail-page { background-color: #d1e4dd; }
         #fanmail-page .page-content { display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap; }
         .chat-window {
             width: 400px; height: 75vh;
@@ -193,11 +188,9 @@
         .message-bubble.visible { opacity: 1; transform: translateY(0); }
         .message-bubble.sender { background-color: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; color: black; }
         .fanmail-image {
-            width: 300px; /* Tăng kích thước ảnh một chút */
-            height: 420px;
-            object-fit: cover; border: 8px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 300px; height: 420px; object-fit: cover; border: 8px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border-radius: 5px; opacity: 0; transform: scale(0.8) rotate(5deg);
-            transition: opacity 1s, transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
         }
         .fanmail-image.visible { opacity: 1; transform: scale(1) rotate(0deg); }
 
@@ -211,51 +204,49 @@
         @media (max-width: 1024px) {
             .page { padding: 10vh 5vw; } .headline { font-size: 5rem; } .fashion-text h2 { font-size: 3.5rem; } #game-rules-popup h3, #game-result h3 { font-size: 3rem; }
             #fanmail-page .page-content { flex-direction: column; gap: 30px; }
-            .cover-footer { position: static; margin-top: 40px; }
         }
         @media (max-width: 768px) {
             .page { min-height: auto; padding: 15vw 5vw; }
             #cover-page .page-content { flex-direction: column; text-align: center; }
             .cover-image { width: 80%; margin-bottom: 30px; } .cover-text { text-align: center; } .headline { font-size: 4rem; }
-            .special-edition-tag { top: -20px; left: 50%; transform: translateX(-50%) rotate(-5deg); }
             #fashion-page .page-content { flex-direction: column; }
             .fashion-text { width: 100%; text-align: center; }
-            .fashion-text .quote { margin: 20px auto; border: none; border-top: 3px solid var(--color-gold); border-bottom: 3px solid var(--color-gold); padding: 15px 0; }
             .fashion-gallery { width: 100%; height: 50vh; margin-top: 40px; } .fashion-gallery img { width: 65%; }
             #game-container { height: 60vh; }
-            #game-rules-popup h3, #game-result h3 { font-size: 2.5rem; } #game-rules-popup p { font-size: 0.9rem; }
             .chat-window { width: 90vw; height: 70vh; }
-            .back-cover-image { width: 90%; } .back-cover-text { font-size: 2rem; }
             .fanmail-image { width: 200px; height: 280px; }
+            .back-cover-image { width: 90%; } .back-cover-text { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
-    <div class="custom-cursor"></div>
-    <div id="curtain-lock-screen"></div>
+    <div class="cursor dot"></div>
+    <div class="cursor outline"></div>
+
+    <div id="curtain-lock-screen">
+        <div class="curtain left-curtain"></div>
+        <div class="curtain right-curtain"></div>
+        <div class="password-overlay" id="password-overlay">
+            <div class="password-box" id="password-box">
+                <h2>Một Món Quà Bất Ngờ</h2>
+                <p>Nhập mật khẩu (ddmm)</p>
+                <input type="password" id="password-input" maxlength="4" autocomplete="off">
+            </div>
+        </div>
+    </div>
+
     <div id="music-control" style="display: none;">🎵</div>
 
-    <main id="magazine-content">
+    <main id="magazine-content" style="visibility: hidden;">
         <section id="cover-page" class="page">
-            <div class="sparkle-container"></div>
             <div class="page-content">
                 <img src="anh/anh_bia.jpg" alt="Ảnh bìa" class="cover-image animated">
                 <div class="cover-text">
-                    <div class="special-edition-tag animated">ẤN BẢN ĐẶC BIỆT</div>
                     <p class="magazine-title animated delay-1">The Queen</p>
                     <h1 class="headline animated delay-2">20.10</h1>
                     <div class="tits animated delay-3">
                         <p>• Nhan sắc vượt thời gian</p>
                         <p>• Phong cách của một biểu tượng</p>
-                    </div>
-                    <div class="cover-footer animated delay-3">
-                        <div class="qr-price-group">
-                            <p class="price-tag">Giá: Vô giá</p>
-                            <div class="qr-code">
-                                <img src="anh/qr-code.png" alt="QR Code">
-                            </div>
-                        </div>
-                        <div class="barcode"></div>
                     </div>
                 </div>
             </div>
@@ -276,8 +267,22 @@
         </section>
 
         <section id="game-page" class="page">
-             <div class="sparkle-container"></div>
-             </section>
+            <div class="page-content">
+                <div id="game-container">
+                    <canvas id="gameCanvas"></canvas>
+                    <div id="game-score">Điểm: 0</div>
+                    <div id="game-rules-popup">
+                        <h3>Idol Challenge</h3>
+                        <p>Di chuyển 🎤 để hứng quà, né bom!<br>Đạt 80 điểm để chiến thắng!</p>
+                        <button id="startGameBtn">Bắt đầu!</button>
+                    </div>
+                    <div id="game-result">
+                        <h3 id="result-message"></h3>
+                        <canvas id="fireworks-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
         
         <section id="fanmail-page" class="page">
             <div class="page-content">
@@ -305,180 +310,77 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Toàn bộ mã JS cũ (Màn hình khóa, nhạc, scroll, game, fanmail, sparkle, cursor) ---
-        // ... (Giữ nguyên không thay đổi) ...
+        const mainContent = document.getElementById('magazine-content');
 
-        // === MỚI: Logic cho hiệu ứng trang Fashion ===
-        function activateFashionGalleryEffect() {
-            const gallery = document.querySelector('.fashion-gallery');
-            if (!gallery) return;
+        // --- 1. HIỆU ỨNG CON TRỎ CHUỘT ---
+        const cursorDot = document.querySelector('.cursor.dot');
+        const cursorOutline = document.querySelector('.cursor.outline');
+        window.addEventListener('mousemove', e => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+        document.body.addEventListener('click', e => {
+            const clickEffect = document.createElement('div');
+            clickEffect.className = 'click-effect';
+            clickEffect.style.left = `${e.clientX}px`;
+            clickEffect.style.top = `${e.clientY}px`;
+            document.body.appendChild(clickEffect);
+            setTimeout(() => clickEffect.remove(), 500);
+        });
 
-            const images = gallery.querySelectorAll('img');
-            const img1 = images[0];
-            const img2 = images[1];
-
-            gallery.addEventListener('mousemove', (e) => {
-                const rect = gallery.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                // Tính toán vị trí tương đối của chuột trong gallery (từ -0.5 đến 0.5)
-                const mouseX = (x / rect.width) - 0.5;
-                
-                // Nếu chuột ở nửa bên trái, kích hoạt ảnh 1
-                if (mouseX < 0) {
-                    img1.classList.add('is-active');
-                    img2.classList.remove('is-active');
-                } 
-                // Nếu chuột ở nửa bên phải, kích hoạt ảnh 2
-                else {
-                    img2.classList.add('is-active');
-                    img1.classList.remove('is-active');
-                }
-            });
-
-            gallery.addEventListener('mouseleave', () => {
-                img1.classList.remove('is-active');
-                img2.classList.remove('is-active');
-            });
-        }
-        
-        // Kích hoạt hiệu ứng
-        activateFashionGalleryEffect();
-
-        // --- Cập nhật IntersectionObserver để kích hoạt ảnh Fan Mail ---
-        const pages = document.querySelectorAll('.page');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    // Kích hoạt hiệu ứng riêng cho từng trang
-                    if (entry.target.id === 'fanmail-page') {
-                        startFanMailAnimation();
-                        // Kích hoạt ảnh duy nhất trong Fanmail
-                        const fanmailImage = document.querySelector('.fanmail-image');
-                        if(fanmailImage) {
-                            setTimeout(() => fanmailImage.classList.add('visible'), 500);
-                        }
-                    }
-                    if (entry.target.querySelector('.sparkle-container')) {
-                        activateSparkleEffect(entry.target);
-                    }
-                } else {
-                     entry.target.classList.remove('is-visible');
-                     if (entry.target.id === 'fanmail-page') {
-                        const fanmailImage = document.querySelector('.fanmail-image');
-                        if(fanmailImage) fanmailImage.classList.remove('visible');
-                     }
-                }
-            });
-        }, { threshold: 0.3 });
-        pages.forEach(page => observer.observe(page));
-
-        // ... (Toàn bộ các hàm JS khác như màn hình khóa, nhạc, game, fanmail... giữ nguyên)
-    });
-    // Lưu ý: Dán toàn bộ các hàm JS từ code trước vào đây.
-    // Vì các hàm đó không thay đổi nên tôi đã rút gọn để bạn dễ theo dõi phần mới.
-    // Bạn chỉ cần chép và dán toàn bộ script của file trước vào vị trí này.
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- Màn hình khóa ---
+        // --- 2. MÀN HÌNH KHÓA & NHẠC NỀN ---
         const curtainScreen = document.getElementById('curtain-lock-screen');
         const passwordInput = document.getElementById('password-input');
         const passwordBox = document.getElementById('password-box');
         const backgroundMusic = document.getElementById('backgroundMusic');
         const musicControl = document.getElementById('music-control');
-
+        
+        passwordInput.focus();
         passwordInput.addEventListener('input', () => {
             if (passwordInput.value === '0901') {
                 curtainScreen.classList.add('open');
-                setTimeout(() => curtainScreen.style.display = 'none', 3000);
+                mainContent.style.visibility = 'visible';
+                setTimeout(() => {
+                    curtainScreen.style.display = 'none';
+                    cursorOutline.classList.remove('hidden');
+                }, 3000);
                 
                 backgroundMusic.volume = 0.4;
                 backgroundMusic.play().catch(e => console.log("Trình duyệt chặn tự động phát nhạc."));
                 musicControl.style.display = 'flex';
                 musicControl.textContent = '🎵';
-
             } else if (passwordInput.value.length >= 4) {
                 passwordBox.classList.add('shake');
                 setTimeout(() => { passwordBox.classList.remove('shake'); passwordInput.value = ''; }, 500);
             }
         });
-
-        // Xử lý nút bật/tắt nhạc nền
         musicControl.addEventListener('click', () => {
             if (backgroundMusic.paused) {
-                backgroundMusic.play();
-                musicControl.textContent = '🎵';
+                backgroundMusic.play(); musicControl.textContent = '🎵';
             } else {
-                backgroundMusic.pause();
-                musicControl.textContent = '🔇';
+                backgroundMusic.pause(); musicControl.textContent = '🔇';
             }
         });
 
-        // Hiệu ứng con trỏ chuột tùy chỉnh
-        const cursor = document.querySelector('.custom-cursor');
-        window.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-
-        // === MỚI: Logic cho hiệu ứng trang Fashion ===
-        function activateFashionGalleryEffect() {
-            const gallery = document.querySelector('.fashion-gallery');
-            if (!gallery) return;
-
-            const images = gallery.querySelectorAll('img');
-            if (images.length < 2) return;
-            const img1 = images[0];
-            const img2 = images[1];
-
-            gallery.addEventListener('mousemove', (e) => {
-                const rect = gallery.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                
-                // Vị trí chuột theo chiều ngang (từ 0 đến 1)
-                const mouseXRatio = x / rect.width;
-                
-                // Nếu chuột ở nửa bên trái, kích hoạt ảnh 1
-                if (mouseXRatio < 0.5) {
-                    img1.classList.add('is-active');
-                    img2.classList.remove('is-active');
-                } 
-                // Nếu chuột ở nửa bên phải, kích hoạt ảnh 2
-                else {
-                    img2.classList.add('is-active');
-                    img1.classList.remove('is-active');
-                }
-            });
-
-            gallery.addEventListener('mouseleave', () => {
-                img1.classList.remove('is-active');
-                img2.classList.remove('is-active');
-            });
-        }
-        activateFashionGalleryEffect();
-
-        // Nâng cấp: Hiệu ứng khi cuộn, kết hợp các hiệu ứng mới
+        // --- 3. HIỆU ỨNG KHI CUỘN TRANG ---
         const pages = document.querySelectorAll('.page');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    // Kích hoạt hiệu ứng riêng cho từng trang
                     if (entry.target.id === 'fanmail-page') {
                         startFanMailAnimation();
                         const fanmailImage = document.querySelector('#fanmail-page .fanmail-image');
-                        if (fanmailImage) {
-                            setTimeout(() => fanmailImage.classList.add('visible'), 500);
-                        }
-                    }
-                    if (entry.target.querySelector('.sparkle-container')) {
-                        activateSparkleEffect(entry.target);
+                        if (fanmailImage) setTimeout(() => fanmailImage.classList.add('visible'), 500);
                     }
                 } else {
-                     entry.target.classList.remove('is-visible');
+                    entry.target.classList.remove('is-visible');
                      if (entry.target.id === 'fanmail-page') {
                         const fanmailImage = document.querySelector('#fanmail-page .fanmail-image');
                         if (fanmailImage) fanmailImage.classList.remove('visible');
@@ -488,7 +390,25 @@
         }, { threshold: 0.3 });
         pages.forEach(page => observer.observe(page));
 
-        // Logic Game (Giữ nguyên)
+        // --- 4. HIỆU ỨNG TRANG FASHION ---
+        const gallery = document.querySelector('.fashion-gallery');
+        if (gallery) {
+            const images = gallery.querySelectorAll('img');
+            gallery.addEventListener('mousemove', (e) => {
+                const rect = gallery.getBoundingClientRect();
+                const mouseXRatio = (e.clientX - rect.left) / rect.width;
+                if (mouseXRatio < 0.5) {
+                    images[0].classList.add('is-active'); images[1].classList.remove('is-active');
+                } else {
+                    images[1].classList.add('is-active'); images[0].classList.remove('is-active');
+                }
+            });
+            gallery.addEventListener('mouseleave', () => {
+                images.forEach(img => img.classList.remove('is-active'));
+            });
+        }
+        
+        // --- 5. LOGIC GAME & PHÁO HOA ---
         const gameContainer = document.getElementById('game-container');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -501,51 +421,168 @@
             bomb: document.getElementById('bombSound'),
             win: document.getElementById('winSound')
         };
-        let score, player, items, gameLoopId, itemInterval;
-        function resizeCanvas() { if(canvas) { canvas.width = gameContainer.clientWidth; canvas.height = gameContainer.clientHeight; } }
-        window.addEventListener('resize', resizeCanvas); resizeCanvas();
-        document.getElementById('startGameBtn')?.addEventListener('click', () => { rulesPopup.style.display = 'none'; resizeCanvas(); startGame(); });
+        let score, player, items, gameLoopId;
+
+        document.getElementById('startGameBtn')?.addEventListener('click', () => {
+            rulesPopup.style.display = 'none';
+            resizeCanvas();
+            startGame();
+        });
+
         function startGame() {
-            score = 0; items = []; gameLoopId = null;
+            score = 0; items = [];
             scoreEl.textContent = `Điểm: ${score}`;
             player = { x: canvas.width / 2 - 25, y: canvas.height - 70, width: 50, height: 60, emoji: '🎤' };
-            itemInterval = setInterval(spawnItem, 500);
-            gameLoopId = requestAnimationFrame(gameLoop);
+            gameLoopId = setInterval(gameLoop, 1000/60);
         }
-        function gameLoop() { updateGame(); if(gameLoopId) requestAnimationFrame(gameLoop); }
-        const itemTypes = [{ emoji: '❤️', value: 5, type: 'good' }, { emoji: '⭐', value: 10, type: 'good' }, { emoji: '💣', value: -15, type: 'bad' }];
-        function spawnItem() { const type = itemTypes[Math.floor(Math.random() * itemTypes.length)]; items.push({ x: Math.random() * (canvas.width - 40), y: -40, size: 40, speed: 2 + Math.random() * 3, ...type }); }
+
+        function gameLoop() {
+            if (Math.random() < 0.05) spawnItem();
+            updateGame();
+            drawGame();
+        }
+
+        function spawnItem() {
+            const itemTypes = [{ emoji: '❤️', value: 5, type: 'good' }, { emoji: '⭐', value: 10, type: 'good' }, { emoji: '💣', value: -15, type: 'bad' }];
+            const type = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+            items.push({ x: Math.random() * (canvas.width - 40), y: -40, size: 40, speed: 2 + Math.random() * 3, ...type });
+        }
+
         function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = '50px sans-serif'; ctx.fillText(player.emoji, player.x, player.y);
             items.forEach((item, index) => {
-                item.y += item.speed; ctx.font = `${item.size}px sans-serif`; ctx.fillText(item.emoji, item.x, item.y);
+                item.y += item.speed;
                 if (item.y > canvas.height) items.splice(index, 1);
                 if (player.x < item.x + item.size && player.x + player.width > item.x && player.y < item.y + item.size && player.y + player.height > item.y) {
-                    score = Math.max(0, score + item.value); scoreEl.textContent = `Điểm: ${score}`; items.splice(index, 1);
+                    score = Math.max(0, score + item.value);
+                    scoreEl.textContent = `Điểm: ${score}`;
+                    items.splice(index, 1);
                     (item.type === 'good' ? audio.collect : audio.bomb).play();
                     if (score >= 80) endGame(true);
                 }
             });
         }
+        
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '50px sans-serif'; ctx.fillText(player.emoji, player.x, player.y);
+            items.forEach(item => {
+                ctx.font = `${item.size}px sans-serif`; ctx.fillText(item.emoji, item.x, item.y);
+            });
+        }
+        
         function endGame(isWin) {
-            cancelAnimationFrame(gameLoopId); gameLoopId = null; clearInterval(itemInterval);
-            resultScreen.style.display = 'flex'; resultMessage.textContent = isWin ? "XUẤT SẮC!" : "Cố Lên Nào!";
-            if (isWin) audio.win.play();
+            clearInterval(gameLoopId);
+            resultScreen.style.display = 'flex';
+            resultMessage.textContent = isWin ? "XUẤT SẮC!" : "Cố Lên Nào!";
+            if (isWin) {
+                audio.win.play();
+                launchFireworks();
+            }
             if (!document.getElementById('replayBtn')) {
                 const replayBtn = document.createElement('button'); replayBtn.id = 'replayBtn'; replayBtn.textContent = 'Chơi lại';
-                replayBtn.style.cssText = "padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 50px; background: var(--color-gold); color: var(--color-dark); cursor: pointer; font-weight: 600; margin-top: 20px;";
+                replayBtn.style.cssText = "padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 50px; background: var(--color-gold); color: var(--color-dark); cursor: none; font-weight: 600; margin-top: 20px; z-index:20;";
                 replayBtn.onclick = () => { resultScreen.style.display = 'none'; rulesPopup.style.display = 'flex'; };
                 resultScreen.appendChild(replayBtn);
             }
         }
-        function movePlayer(clientX) { if (!player) return; const rect = canvas.getBoundingClientRect(); let targetX = clientX - rect.left - player.width / 2; player.x = Math.max(0, Math.min(targetX, canvas.width - player.width)); }
-        canvas?.addEventListener('mousemove', e => movePlayer(e.clientX)); canvas?.addEventListener('touchmove', e => { e.preventDefault(); movePlayer(e.touches[0].clientX); });
 
-        // Fan Mail Animation (Giữ nguyên)
-        const messages = [{ text: "Hi Mom!", sticker: false }, { text: "🥰", sticker: true }, { text: "Chúc mẹ một ngày 20/10 thật nhiều niềm vui và hạnh phúc ạ!", sticker: false }, { text: "Mẹ mãi là người phụ nữ tuyệt vời nhất trong lòng con! Yêu mẹ! ❤️", sticker: false }];
+        function movePlayer(clientX) { if (!player) return; const rect = canvas.getBoundingClientRect(); player.x = Math.max(0, Math.min(clientX - rect.left - player.width / 2, canvas.width - player.width)); }
+        canvas.addEventListener('mousemove', e => movePlayer(e.clientX));
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); movePlayer(e.touches[0].clientX); });
+        
+        function resizeCanvas() { if(canvas) { canvas.width = gameContainer.clientWidth; canvas.height = gameContainer.clientHeight; } }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        // HIỆU ỨNG PHÁO HOA
+        function launchFireworks() {
+            const fwCanvas = document.getElementById('fireworks-canvas');
+            const fwCtx = fwCanvas.getContext('2d');
+            fwCanvas.width = fwCanvas.clientWidth;
+            fwCanvas.height = fwCanvas.clientHeight;
+            let fireworks = [];
+            let particles = [];
+            
+            function Firework(sx, sy, tx, ty) {
+                this.x = sx; this.y = sy; this.sx = sx; this.sy = sy; this.tx = tx; this.ty = ty;
+                this.distanceToTarget = Math.sqrt(Math.pow(tx - sx, 2) + Math.pow(ty - sy, 2));
+                this.distanceTraveled = 0;
+                this.coordinates = []; this.coordinateCount = 3;
+                while (this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
+                this.angle = Math.atan2(ty - sy, tx - sx); this.speed = 2; this.acceleration = 1.05; this.brightness = Math.random() * 50 + 50;
+                this.targetRadius = 1;
+            }
+
+            Firework.prototype.update = function(index) {
+                this.coordinates.pop(); this.coordinates.unshift([this.x, this.y]);
+                if (this.targetRadius < 8) { this.targetRadius += 0.3; } else { this.targetRadius = 1; }
+                this.speed *= this.acceleration;
+                let vx = Math.cos(this.angle) * this.speed; let vy = Math.sin(this.angle) * this.speed;
+                this.distanceTraveled = Math.sqrt(Math.pow(this.x - this.sx, 2) + Math.pow(this.y - this.sy, 2));
+                if (this.distanceTraveled >= this.distanceToTarget) {
+                    createParticles(this.tx, this.ty); fireworks.splice(index, 1);
+                } else {
+                    this.x += vx; this.y += vy;
+                }
+            }
+
+            Firework.prototype.draw = function() {
+                fwCtx.beginPath(); fwCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                fwCtx.lineTo(this.x, this.y);
+                fwCtx.strokeStyle = 'hsl(' + (Math.random()*360) + ', 100%, ' + this.brightness + '%)';
+                fwCtx.stroke();
+            }
+
+            function Particle(x, y) {
+                this.x = x; this.y = y; this.coordinates = []; this.coordinateCount = 5;
+                while (this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
+                this.angle = Math.random() * Math.PI * 2; this.speed = Math.random() * 10 + 1;
+                this.friction = 0.95; this.gravity = 1; this.hue = Math.random()*360; this.brightness = Math.random() * 50 + 50;
+                this.alpha = 1; this.decay = Math.random() * 0.03 + 0.015;
+            }
+
+            Particle.prototype.update = function(index) {
+                this.coordinates.pop(); this.coordinates.unshift([this.x, this.y]);
+                this.speed *= this.friction; this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+                if (this.alpha <= this.decay) { particles.splice(index, 1); }
+            }
+
+            Particle.prototype.draw = function() {
+                fwCtx.beginPath(); fwCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                fwCtx.lineTo(this.x, this.y);
+                fwCtx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
+                fwCtx.stroke();
+            }
+
+            function createParticles(x, y) { let particleCount = 30; while (particleCount--) { particles.push(new Particle(x, y)); } }
+
+            let fireworkInterval = setInterval(() => {
+                let startX = fwCanvas.width / 2; let startY = fwCanvas.height;
+                let endX = Math.random() * fwCanvas.width; let endY = Math.random() * fwCanvas.height / 2;
+                fireworks.push(new Firework(startX, startY, endX, endY));
+            }, 800);
+
+            let animationLoop = () => {
+                requestAnimationFrame(animationLoop);
+                fwCtx.globalCompositeOperation = 'destination-out';
+                fwCtx.fillStyle = 'rgba(0, 0, 0, 0.5)'; fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
+                fwCtx.globalCompositeOperation = 'lighter';
+                let i = fireworks.length; while (i--) { fireworks[i].draw(); fireworks[i].update(i); }
+                i = particles.length; while (i--) { particles[i].draw(); particles[i].update(i); }
+            }
+            animationLoop();
+            setTimeout(() => {
+                clearInterval(fireworkInterval);
+            }, 5000);
+        }
+
+        // --- 6. LOGIC TIN NHẮN FAN MAIL ---
         function startFanMailAnimation() {
-            const messageArea = document.querySelector('.message-area'); if(!messageArea || messageArea.children.length > 0) return; let delay = 500;
+            const messageArea = document.querySelector('.message-area');
+            if (!messageArea || messageArea.children.length > 0) return;
+            const messages = [{ text: "Hi Mom!", sticker: false }, { text: "🥰", sticker: true }, { text: "Chúc mẹ một ngày 20/10 thật nhiều niềm vui và hạnh phúc ạ!", sticker: false }, { text: "Mẹ mãi là người phụ nữ tuyệt vời nhất trong lòng con! Yêu mẹ! ❤️", sticker: false }];
+            let delay = 500;
             messages.forEach(msg => {
                 setTimeout(() => {
                     const bubble = document.createElement('div'); bubble.classList.add('message-bubble', 'sender');
@@ -556,27 +593,6 @@
                 }, delay);
                 delay += 1500;
             });
-        }
-        
-        // Hiệu ứng bụi vàng lấp lánh (Giữ nguyên)
-        function activateSparkleEffect(page) {
-            if (page.dataset.sparkleActive) return;
-            page.dataset.sparkleActive = 'true';
-            
-            const sparkleContainer = page.querySelector('.sparkle-container');
-            const handleMouseMove = (e) => {
-                const rect = page.getBoundingClientRect();
-                createSparkle(e.clientX - rect.left, e.clientY - rect.top, sparkleContainer);
-            };
-            page.addEventListener('mousemove', handleMouseMove);
-        }
-        function createSparkle(x, y, container) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.style.left = `${x}px`;
-            sparkle.style.top = `${y}px`;
-            container.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 2000);
         }
     });
     </script>
