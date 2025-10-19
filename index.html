@@ -31,10 +31,7 @@ body {
     line-height: 1.6;
     cursor: none;
 }
-
-/* ================================================= */
-/* === START: CẢI TIẾN MỚI - MÀN HÌNH CHỜ (PRELOADER) === */
-/* ================================================= */
+/* === MÀN HÌNH CHỜ (PRELOADER) === */
 #preloader {
     position: fixed;
     top: 0;
@@ -59,10 +56,6 @@ body {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
-/* =============================================== */
-/* === END: CẢI TIẾN MỚI - MÀN HÌNH CHỜ (PRELOADER) === */
-/* =============================================== */
-
 /* === THANH TIẾN TRÌNH CUỘN TRANG === */
 #scroll-progress-bar {
     position: fixed; top: 0; left: 0; height: 4px;
@@ -164,7 +157,6 @@ body {
 .cover-image-wrapper {
     width: 40%; position: relative; overflow: hidden;
     border: 15px solid var(--color-light); box-shadow: 0 0 30px rgba(0,0,0,0.5); z-index: 2;
-    /* Cải tiến: Thêm transition cho hiệu ứng 3D */
     transition: transform 0.4s var(--ease-out-expo);
     transform-style: preserve-3d;
 }
@@ -273,7 +265,7 @@ margin-top: 20px; transition: transform 0.2s; }
 /* === BẮT ĐẦU: KHU VỰC CSS CHO CÁC CẢI TIẾN MỚI === */
 /* ================================================= */
 
-/* --- Cải tiến 1: Chỉ dẫn cuộn chuột (Thanh lịch hơn) --- */
+/* --- Chỉ dẫn cuộn chuột (Thanh lịch hơn) --- */
 .scroll-indicator {
     position: absolute;
     bottom: 30px;
@@ -310,55 +302,54 @@ margin-top: 20px; transition: transform 0.2s; }
     100% { transform: translate(-50%, 0); opacity: 1; }
 }
 
-/* --- Cải tiến 2: Hiệu ứng Bươm Bướm (Nâng cấp) --- */
+/* --- START: CSS MỚI CHO HIỆU ỨNG BƯƠM BƯỚM TƯƠNG TÁC --- */
 #butterfly-container {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 3; /* Tăng z-index lên trên các phần tử khác */
+    position: fixed; /* Chuyển thành fixed để bướm bay ra toàn màn hình */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9998; /* Đặt z-index cao để bay trên các trang khác */
     overflow: hidden;
 }
 .butterfly {
     position: absolute;
-    opacity: 0.8;
-    will-change: transform;
+    will-change: transform, opacity;
     pointer-events: none;
     transition: opacity 0.5s;
 }
 .butterfly svg {
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); /* Thêm bóng đổ cho đẹp */
 }
-.butterfly .wing-left { animation: flutter-left 0.4s infinite alternate ease-in-out; }
-.butterfly .wing-right { animation: flutter-right 0.4s infinite alternate ease-in-out; }
+/* Animation đập cánh không đổi */
+.butterfly .wing-left { animation: flutter-left 0.3s infinite alternate ease-in-out; }
+.butterfly .wing-right { animation: flutter-right 0.3s infinite alternate ease-in-out; }
 @keyframes flutter-left {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(45deg); }
+    from { transform: rotateY(0deg); } to { transform: rotateY(50deg); }
 }
 @keyframes flutter-right {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(-45deg); }
+    from { transform: rotateY(0deg); } to { transform: rotateY(-50deg); }
 }
+/* --- END: CSS MỚI CHO HIỆU ỨNG BƯƠM BƯỚM TƯƠNG TÁC --- */
 
-/* --- Cải tiến 3: Hiệu ứng Hoa Rơi (Không đổi) --- */
+/* --- Hiệu ứng Hoa Rơi --- */
 #petal-container {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 1; overflow: hidden;
 }
 .petal {
-    position: absolute;
-    top: -20px;
-    width: 15px;
-    height: 15px;
-    background-color: #ffb7c5;
-    border-radius: 1px 15px;
-    opacity: 0;
-    animation: fall linear infinite;
+    position: absolute; top: -20px; width: 15px; height: 15px;
+    background-color: #ffb7c5; border-radius: 1px 15px;
+    opacity: 0; animation: fall linear infinite;
 }
 @keyframes fall {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
     100% { transform: translateY(105vh) rotate(720deg); opacity: 0.5; }
 }
-
-/* --- CSS cho các hiệu ứng cũ (Không đổi) --- */
+/* --- CSS hiệu ứng cũ --- */
 .typing-indicator { display: flex; align-items: center; padding: 10px 15px; background-color: #f0f0f0; border-radius: 18px; border-bottom-left-radius: 4px; align-self: flex-start; }
 .typing-indicator span { height: 8px; width: 8px; background-color: #999; border-radius: 50%; display: inline-block; margin: 0 2px;
 animation: bounce 1.4s infinite ease-in-out both; }
@@ -377,6 +368,7 @@ text-shadow: 0 0 5px rgba(0,0,0,0.7); }
 <div id="preloader">
     <div class="spinner"></div>
 </div>
+
 <div id="scroll-progress-bar"></div>
 <div class="cursor dot"></div>
 <div class="cursor outline"></div>
@@ -394,6 +386,8 @@ text-shadow: 0 0 5px rgba(0,0,0,0.7); }
 </div>
 
 <div id="music-control" style="display: none;"> 🎵 </div>
+
+<div id="butterfly-container"></div>
 
 <main id="magazine-content" style="visibility: hidden;">
     <section id="cover-page" class="page">
@@ -414,10 +408,9 @@ text-shadow: 0 0 5px rgba(0,0,0,0.7); }
         <div class="scroll-indicator">
             <div class="mouse"></div>
         </div>
-        </section>
+    </section>
 
     <section id="fashion-page" class="page">
-        <div id="butterfly-container"></div>
         <div class="page-content">
             <div class="fashion-text">
                 <h2 class="animated" data-text-reveal>Fashionista</h2>
@@ -475,21 +468,19 @@ text-shadow: 0 0 5px rgba(0,0,0,0.7); }
 <audio id="winSound" src="https://cdn.pixabay.com/audio/2022/11/17/audio_88b22280a5.mp3"></audio>
 
 <script>
-// --- START: CẢI TIẾN MỚI - LOGIC MÀN HÌNH CHỜ ---
 window.addEventListener('load', () => {
     const preloader = document.getElementById('preloader');
     if (preloader) {
         preloader.style.opacity = '0';
         setTimeout(() => {
             preloader.style.display = 'none';
-        }, 1000); // Thời gian khớp với transition trong CSS
+        }, 1000);
     }
 });
-// --- END: CẢI TIẾN MỚI - LOGIC MÀN HÌNH CHỜ ---
 
 document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('magazine-content');
-    const scrollIndicator = document.querySelector('.scroll-indicator'); // Sửa lại selector
+    const scrollIndicator = document.querySelector('.scroll-indicator');
     const fanmailImage = document.querySelector('#fanmail-page .fanmail-image');
     const coverImageWrapper = document.querySelector('#cover-page .cover-image-wrapper');
 
@@ -581,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     startFanMailAnimation();
                     setTimeout(() => fanmailImage?.classList.add('visible'), 500);
                 }
-                if (entry.target.id === 'fashion-page') initDynamicButterflyEffect(); // Sửa tên hàm
+                if (entry.target.id === 'fashion-page') initFashionPageInteraction(); // Tên hàm mới
                 if (entry.target.id === 'back-cover-page') initBackCoverEffects();
             }
         });
@@ -600,34 +591,52 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, 100);
     }
-
-    // --- 4. HIỆU ỨNG TRANG FASHION (Không đổi) ---
-    const gallery = document.querySelector('.fashion-gallery');
-    if (gallery) {
-        gallery.addEventListener('mousemove', (e) => {
-            const rect = gallery.getBoundingClientRect();
+    
+    // --- 4. HIỆU ỨNG TRANG FASHION ---
+    // Phần logic này giờ sẽ bao gồm cả việc kích hoạt hiệu ứng bướm
+    const fashionGallery = document.querySelector('.fashion-gallery');
+    if (fashionGallery) {
+        fashionGallery.addEventListener('mousemove', (e) => {
+            const rect = fashionGallery.getBoundingClientRect();
             const mouseXRatio = (e.clientX - rect.left) / rect.width;
-            const images = gallery.querySelectorAll('img');
+            const images = fashionGallery.querySelectorAll('img');
             const activeImage = mouseXRatio < 0.5 ? images[0] : images[1];
             const inactiveImage = mouseXRatio < 0.5 ? images[1] : images[0];
+            
+            // Logic gốc để hoán đổi ảnh
             activeImage.classList.add('is-active');
             inactiveImage.classList.remove('is-active');
+
+            // Logic hiệu ứng 3D cho ảnh active
             const imgRect = activeImage.getBoundingClientRect();
             const x = e.clientX - imgRect.left;
             const y = e.clientY - imgRect.top;
             const rotateY = -1 * ((x - imgRect.width / 2) / (imgRect.width / 2)) * 15;
             const rotateX = ((y - imgRect.height / 2) / (imgRect.height / 2)) * 15;
             activeImage.style.transform = `scale(1.1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            
+            // --- START: LOGIC MỚI KÍCH HOẠT BƯỚM ---
+            // Kiểm tra xem chuột có đang thực sự trỏ vào ảnh inactive không
+            if (e.target === inactiveImage && !window.butterflyBurstTriggered) {
+                const inactiveRect = inactiveImage.getBoundingClientRect();
+                const startX = inactiveRect.left + inactiveRect.width / 2;
+                const startY = inactiveRect.top + inactiveRect.height / 2;
+                createButterflyBurst(startX, startY);
+                window.butterflyBurstTriggered = true; // Đặt cờ để chỉ kích hoạt 1 lần
+            }
+            // --- END: LOGIC MỚI KÍCH HOẠT BƯỚM ---
         });
-        gallery.addEventListener('mouseleave', () => {
-            gallery.querySelectorAll('img').forEach(img => {
+        
+        fashionGallery.addEventListener('mouseleave', () => {
+            fashionGallery.querySelectorAll('img').forEach(img => {
                 img.classList.remove('is-active');
                 img.style.transform = '';
             });
         });
     }
 
-    // --- 5. LOGIC GAME (Không đổi, pháo hoa đã có) ---
+
+    // --- 5. LOGIC GAME (Không đổi) ---
     const gameContainer = document.getElementById('game-container');
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -681,7 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('result-message').textContent = isWin ? "XUẤT SẮC!" : "Cố Lên Nào!";
         if (isWin) {
             document.getElementById('winSound').play();
-            launchFireworks(); // Pháo hoa được gọi ở đây!
+            launchFireworks();
         }
         if (!document.getElementById('replayBtn')) {
             const replayBtn = document.createElement('button'); replayBtn.id = 'replayBtn'; replayBtn.textContent = 'Chơi lại';
@@ -698,13 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
     // --- CÁC HÀM TIỆN ÍCH & HIỆU ỨNG PHỤ ---
-    
-    // START: CẢI TIẾN MỚI - Hiệu ứng 3D ảnh Bìa
     if (coverImageWrapper) {
         coverImageWrapper.addEventListener('mousemove', (e) => {
             const rect = coverImageWrapper.getBoundingClientRect();
             const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-            const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * -8; // Giảm độ nghiêng
+            const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * -8;
             const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * 8;
             coverImageWrapper.style.transform = `perspective(1000px) scale(1.03) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
@@ -712,9 +719,6 @@ document.addEventListener('DOMContentLoaded', () => {
             coverImageWrapper.style.transform = 'perspective(1000px) scale(1) rotate(0deg)';
         });
     }
-    // END: CẢI TIẾN MỚI - Hiệu ứng 3D ảnh Bìa
-
-    // Hiệu ứng 3D ảnh Fan Mail (Không đổi)
     if (fanmailImage) {
         fanmailImage.addEventListener('mousemove', (e) => {
             if(!fanmailImage.classList.contains('visible')) return;
@@ -728,8 +732,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if(fanmailImage.classList.contains('visible')) fanmailImage.style.transform = 'scale(1) rotate(0deg)';
         });
     }
-
-    // Điểm số bay lên (Không đổi)
     function showFloatingScore(value, x, y) {
         const scoreText = document.createElement('div');
         scoreText.className = 'floating-score';
@@ -740,7 +742,6 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContainer.appendChild(scoreText);
         setTimeout(() => scoreText.remove(), 1200);
     }
-    // Logic tin nhắn (Không đổi)
     function startFanMailAnimation() {
         const messageArea = document.querySelector('.message-area');
         if (!messageArea || messageArea.children.length > 0) return;
@@ -768,7 +769,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         setTimeout(showNext, 500);
     }
-    // Hiệu ứng nam châm (Không đổi)
     function handleMagneticEffect(element, event, force) {
         if (!element || window.innerWidth < 768) return;
         const rect = element.getBoundingClientRect();
@@ -784,93 +784,112 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- CÁC HIỆU ỨNG MỚI THÊM VÀO ---
-    
-    // --- START: CẢI TIẾN - Hiệu ứng bươm bướm NÂNG CẤP ---
-    let butterflyEffectsInitialized = false;
-    function initDynamicButterflyEffect() {
-        if (butterflyEffectsInitialized) return;
-        butterflyEffectsInitialized = true;
+    // --- START: NÂNG CẤP HIỆU ỨNG BƯƠM BƯỚM TƯƠNG TÁC ---
+    let fashionEffectsInitialized = false;
+    let activeButterflies = [];
 
-        const container = document.getElementById('butterfly-container');
-        if (!container) return;
-
-        const butterflies = [];
-        const numButterflies = 5;
-        const colors = ['#FFC0CB', '#ADD8E6', '#90EE90', '#FFD700', '#E6E6FA']; // Các màu pastel
-
-        const butterflySVG = `
-            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <g class="wing-left">
-                    <path d="M10,10 C0,0 10,0 10,10" fill="{color}"/>
-                </g>
-                <g class="wing-right">
-                    <path d="M10,10 C20,0 10,0 10,10" fill="{color}"/>
-                </g>
-            </svg>
-        `;
-
-        class Butterfly {
-            constructor() {
-                this.element = document.createElement('div');
-                this.element.className = 'butterfly';
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                this.element.innerHTML = butterflySVG.replace(/{color}/g, color);
-
-                this.x = Math.random() * window.innerWidth;
-                this.y = Math.random() * window.innerHeight;
-                this.size = Math.random() * 20 + 20; // size từ 20-40px
-                this.element.style.width = `${this.size}px`;
-                this.element.style.height = `${this.size}px`;
-                this.element.style.left = `${this.x}px`;
-                this.element.style.top = `${this.y}px`;
-                
-                this.vx = (Math.random() - 0.5) * 2; // Tốc độ ngang
-                this.vy = (Math.random() - 0.5) * 2; // Tốc độ dọc
-                this.angle = 0;
-                this.flutterSpeed = Math.random() * 0.1 + 0.05;
-
-                container.appendChild(this.element);
-            }
-
-            update() {
-                this.x += this.vx;
-                // Thêm hiệu ứng bay lượn lờ
-                this.y += this.vy + Math.sin(this.angle) * 0.5;
-                this.angle += this.flutterSpeed;
-                
-                // Đổi hướng ngẫu nhiên
-                if (Math.random() > 0.98) {
-                    this.vx = (Math.random() - 0.5) * 2;
-                    this.vy = (Math.random() - 0.5) * 2;
-                }
-                
-                // Giữ bướm trong màn hình
-                if (this.x < -this.size || this.x > window.innerWidth || this.y < -this.size || this.y > window.innerHeight) {
-                    // Đưa bướm về phía đối diện
-                    if (this.x < -this.size) this.x = window.innerWidth -1;
-                    if (this.x > window.innerWidth) this.x = -this.size + 1;
-                    if (this.y < -this.size) this.y = window.innerHeight - 1;
-                    if (this.y > window.innerHeight) this.y = -this.size + 1;
-                }
-                
-                this.element.style.transform = `translate(${this.x}px, ${this.y}px) rotate(${this.vx * 10}deg)`;
-            }
-        }
-
-        for (let i = 0; i < numButterflies; i++) {
-            butterflies.push(new Butterfly());
-        }
-
-        function animateButterflies() {
-            butterflies.forEach(b => b.update());
-            requestAnimationFrame(animateButterflies);
-        }
+    function initFashionPageInteraction() {
+        if (fashionEffectsInitialized) return;
+        fashionEffectsInitialized = true;
+        
+        window.butterflyBurstTriggered = false; // Biến toàn cục để kiểm tra
+        
+        // Bắt đầu vòng lặp animation chính
         animateButterflies();
     }
-    // --- END: CẢI TIẾN - Hiệu ứng bươm bướm ---
+
+    const butterflyContainer = document.getElementById('butterfly-container');
+    const colors = ['#FFC0CB', '#ADD8E6', '#90EE90', '#FFD700', '#E6E6FA', '#f77f00', '#d62828'];
+    const butterflySVG = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g class="wing-left"><path d="M10,10 C0,0 10,0 10,10" fill="{color}"/></g><g class="wing-right"><path d="M10,10 C20,0 10,0 10,10" fill="{color}"/></g></svg>`;
+
+    class Butterfly {
+        constructor(startX, startY, behavior) {
+            this.element = document.createElement('div');
+            this.element.className = 'butterfly';
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            this.element.innerHTML = butterflySVG.replace(/{color}/g, color);
+
+            this.x = startX;
+            this.y = startY;
+            this.behavior = behavior;
+            
+            if (this.behavior === 'burst') {
+                this.size = Math.random() * 15 + 10; // 10-25px
+                const angle = Math.random() * 2 * Math.PI;
+                const speed = Math.random() * 3 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.lifespan = Math.random() * 100 + 100; // 100-200 frames
+            } else { // 'linger'
+                this.size = Math.random() * 20 + 20; // 20-40px
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.lifespan = Infinity;
+            }
+
+            this.element.style.width = `${this.size}px`;
+            this.element.style.height = `${this.size}px`;
+            this.angle = 0;
+            this.flutterSpeed = Math.random() * 0.1 + 0.05;
+
+            butterflyContainer.appendChild(this.element);
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.lifespan--;
+
+            if (this.behavior === 'linger') {
+                this.y += Math.sin(this.angle) * 0.5;
+                this.angle += this.flutterSpeed;
+                if (Math.random() > 0.98) {
+                    this.vx = (Math.random() - 0.5) * 1.5;
+                    this.vy = (Math.random() - 0.5) * 1.5;
+                }
+            } else { // 'burst'
+                this.vy += 0.03; // Hơi bị hút xuống 1 chút
+                this.element.style.opacity = this.lifespan / 100;
+            }
+
+            this.element.style.transform = `translate(${this.x}px, ${this.y}px) rotate(${this.vx * 10}deg)`;
+
+            // Điều kiện để xóa bướm
+            const isOutOfBounds = this.x < -this.size || this.x > window.innerWidth + this.size || this.y < -this.size || this.y > window.innerHeight + this.size;
+            if (this.lifespan <= 0 || (this.behavior === 'burst' && isOutOfBounds)) {
+                this.element.remove();
+                return false; // Tín hiệu để xóa khỏi mảng
+            }
+            return true;
+        }
+    }
     
-    // Hiệu ứng hoa rơi (Không đổi)
+    function createButterflyBurst(x, y) {
+        const burstCount = 30; // Số lượng bướm bay ra
+        for (let i = 0; i < burstCount; i++) {
+            activeButterflies.push(new Butterfly(x, y, 'burst'));
+        }
+        
+        // Tạo thêm bướm bay lượn sau 1.5 giây
+        setTimeout(() => {
+            const lingerCount = 3;
+            for (let i = 0; i < lingerCount; i++) {
+                 // Vị trí xuất hiện ngẫu nhiên gần khu vực gallery
+                const galleryRect = fashionGallery.getBoundingClientRect();
+                const startX = galleryRect.left + Math.random() * galleryRect.width;
+                const startY = galleryRect.top + Math.random() * galleryRect.height;
+                activeButterflies.push(new Butterfly(startX, startY, 'linger'));
+            }
+        }, 1500);
+    }
+    
+    function animateButterflies() {
+        activeButterflies = activeButterflies.filter(b => b.update());
+        requestAnimationFrame(animateButterflies);
+    }
+    // --- END: NÂNG CẤP HIỆU ỨNG BƯƠM BƯỚM ---
+
+    // --- HIỆU ỨNG HOA RƠI ---
     let backCoverEffectsInitialized = false;
     function initBackCoverEffects() {
         if (backCoverEffectsInitialized) return;
@@ -890,7 +909,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Tái sử dụng các hàm gốc không đổi ---
     (function copyOriginalFunctions() {
-        // Hiệu ứng kim tuyến
         window.startParticleAnimation = function() {
             const canvas = document.getElementById('particle-canvas'); if(!canvas) return;
             const ctx = canvas.getContext('2d'); let particles = [];
@@ -906,7 +924,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } requestAnimationFrame(animate); }
             animate();
         };
-        // Hiệu ứng pháo hoa
         window.launchFireworks = function() {
             const fwCanvas = document.getElementById('fireworks-canvas'); if(!fwCanvas) return;
             const fwCtx = fwCanvas.getContext('2d'); fwCanvas.width = fwCanvas.clientWidth; fwCanvas.height = fwCanvas.clientHeight; let fireworks = [], particles = [];
