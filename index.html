@@ -6,12 +6,14 @@
 <title>The Queen - Ấn Bản Đặc Biệt 20.10</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <style>
 /* === BIẾN TOÀN CỤC & THIẾT LẬP CƠ BẢN === */
 :root {
 --font-serif: 'Lora', serif;
 --font-sans: 'Manrope', sans-serif;
+/* NÂNG CẤP MỚI: Biến cho font chữ viết tay */
+--font-handwriting: 'Dancing Script', cursive;
 --color-gold: #c9ab81;
 --color-dark: #1a1a1a;
 --color-light: #fdfdfd;
@@ -31,7 +33,31 @@ color: var(--color-text);
 overflow-x: hidden;
 line-height: 1.6;
 cursor: none; /* Ẩn con trỏ mặc định */
+/* NÂNG CẤP MỚI: Thêm perspective để tạo hiệu ứng 3D khi cuộn */
+perspective: 1500px;
 }
+
+/* === NÂNG CẤP MỚI: MÀN HÌNH CHỜ (PRELOADER) === */
+#preloader {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+background-color: var(--color-dark);
+z-index: 30000;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--color-gold);
+font-family: var(--font-serif);
+font-size: 2rem;
+letter-spacing: 4px;
+opacity: 1;
+transition: opacity 1.5s ease-in-out;
+}
+#preloader.hidden {
+opacity: 0;
+pointer-events: none;
+}
+
 /* === NÂNG CẤP: THANH TIẾN TRÌNH CUỘN TRANG === */
 #scroll-progress-bar {
 position: fixed;
@@ -88,6 +114,14 @@ rgba(26, 26, 26, 0.95) 100%
 /* === Màn rèm khóa === */
 #curtain-lock-screen {
 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2000;
+/* NÂNG CẤP MỚI: Ban đầu ẩn đi để preloader chạy trước */
+visibility: hidden;
+opacity: 0;
+transition: opacity 1s 0.5s;
+}
+#curtain-lock-screen.visible {
+visibility: visible;
+opacity: 1;
 }
 .curtain {
 position: absolute; top: 0; width: 50%; height: 100%;
@@ -131,13 +165,24 @@ font-size: 24px; cursor: none; z-index: 1000; backdrop-filter: blur(5px); transi
 transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 #music-control:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--color-gold); }
+
 /* === Cấu trúc trang & Hiệu ứng === */
 .page {
 width: 100%; min-height: 100vh; padding: 10vh 10vw; display: flex; justify-content: center; align-items: center;
-position: relative; overflow: hidden; transition: opacity 1.5s var(--ease-out-expo), transform 1.5s var(--ease-out-expo);
-opacity: 0; transform: translateY(100px);
+position: relative; overflow: hidden;
+/* NÂNG CẤP MỚI: Thay đổi transition để có hiệu ứng 3D */
+transition: opacity 1.5s var(--ease-out-expo), transform 1.5s var(--ease-out-expo);
+opacity: 0;
+/* NÂNG CẤP MỚI: Trạng thái ban đầu cho hiệu ứng 3D */
+transform: translateY(150px) rotateX(-20deg) scale(0.9);
+transform-style: preserve-3d;
 }
-.page.is-visible { opacity: 1; transform: translateY(0); }
+.page.is-visible {
+opacity: 1;
+/* NÂNG CẤP MỚI: Trạng thái cuối cùng cho hiệu ứng 3D */
+transform: translateY(0) rotateX(0deg) scale(1);
+}
+
 .page-content { width: 100%; max-width: 1200px; z-index: 2; position: relative; }
 .animated { opacity: 0; transform: translateY(50px); transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo); }
 .is-visible .animated { opacity: 1; transform: translateY(0); }
@@ -213,13 +258,13 @@ color: var(--color-dark);
 .fashion-text .quote { font-style: italic; font-size: 1.2rem; margin: 30px 0; padding-left: 20px; border-left: 3px solid var(--color-gold); }
 /* NÂNG CẤP MỚI: CSS cho chữ cái lớn đầu đoạn */
 .fashion-text p:first-of-type::first-letter {
-    font-family: var(--font-serif);
-    font-size: 4rem;
-    color: var(--color-gold);
-    float: left;
-    line-height: 0.8;
-    margin-right: 10px;
-    padding-top: 5px;
+font-family: var(--font-serif);
+font-size: 4rem;
+color: var(--color-gold);
+float: left;
+line-height: 0.8;
+margin-right: 10px;
+padding-top: 5px;
 }
 .fashion-gallery {
 width: 50%; position: relative; height: 60vh;
@@ -231,6 +276,8 @@ position: absolute; width: 60%;
 box-shadow: 0 15px 30px rgba(0,0,0,0.2); border: 8px solid white;
 transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s, z-index 0s 0.25s;
 will-change: transform;
+/* NÂNG CẤP MỚI: Thêm con trỏ cho biết có thể click */
+cursor: none;
 }
 .fashion-gallery img:nth-child(1) { top: 10%; left: 10%; transform: rotate(-8deg); z-index: 1; }
 .fashion-gallery img:nth-child(2) { bottom: 10%; right: 10%; transform: rotate(10deg); z-index: 2; }
@@ -287,6 +334,49 @@ border-radius: 5px; opacity: 0; transform: scale(0.8) rotate(5deg);
 transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 }
 .fanmail-image.visible { opacity: 1; transform: scale(1) rotate(0deg); }
+
+/* === NÂNG CẤP MỚI: TRANG LỜI NHẮN VIẾT TAY === */
+#letter-page {
+background-color: #f5f1ea;
+background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
+}
+.letter-content {
+background-color: rgba(253, 253, 253, 0.8);
+padding: 50px;
+max-width: 800px;
+width: 100%;
+box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+border: 1px solid #ddd;
+border-radius: 5px;
+text-align: center;
+}
+.letter-content h2 {
+font-family: var(--font-serif);
+font-size: clamp(2rem, 6vw, 3.5rem);
+margin-bottom: 30px;
+color: var(--color-dark);
+}
+.letter-text {
+font-family: var(--font-handwriting);
+font-size: clamp(1.5rem, 4vw, 2.2rem);
+color: #444;
+line-height: 2;
+min-height: 200px; /* Đảm bảo có không gian cho chữ chạy */
+}
+/* Hiệu ứng con trỏ gõ chữ */
+.letter-text .cursor-blink {
+display: inline-block;
+background-color: #555;
+animation: blink 1s step-end infinite;
+width: 3px;
+height: 2.2rem;
+margin-left: 5px;
+}
+@keyframes blink {
+from, to { background-color: transparent }
+50% { background-color: #555; }
+}
+
 #back-cover-page { background-color: var(--color-paper); text-align: center; }
 .back-cover-image { width: 60%; max-width: 700px; border: 20px solid white; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
 .back-cover-text { font-family: var(--font-serif); font-size: clamp(1.8rem, 5vw, 3rem); margin-top: 40px; }
@@ -308,13 +398,60 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 .chat-window { width: 90vw; height: 70vh; }
 .fanmail-image { width: 200px; height: 280px; }
 .back-cover-image { width: 90%; }
+.letter-content { padding: 30px; }
 }
+
+/* === NÂNG CẤP MỚI: CSS CHO THƯ VIỆN ẢNH LIGHTBOX === */
+#lightbox-overlay {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0,0,0,0.85);
+backdrop-filter: blur(8px);
+z-index: 15000;
+display: flex;
+justify-content: center;
+align-items: center;
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.5s, visibility 0.5s;
+}
+#lightbox-overlay.visible {
+opacity: 1;
+visibility: visible;
+}
+#lightbox-image {
+max-width: 90vw;
+max-height: 85vh;
+transform: scale(0.8);
+transition: transform 0.5s var(--ease-out-expo);
+}
+#lightbox-overlay.visible #lightbox-image {
+transform: scale(1);
+}
+#close-lightbox {
+position: absolute;
+top: 30px; right: 40px;
+font-size: 3rem;
+color: white;
+cursor: none;
+transition: transform 0.3s;
+}
+#close-lightbox:hover {
+transform: scale(1.2) rotate(90deg);
+}
+
 </style>
 </head>
 <body>
+
+<div id="preloader">
+    <span>Món Quà Đặc Biệt Dành Tặng Mẹ...</span>
+</div>
+
 <div id="scroll-progress-bar"></div>
 <div class="cursor dot"></div>
 <div class="cursor outline"></div>
+
 <div id="curtain-lock-screen">
 <div class="curtain left-curtain"></div>
 <div class="curtain right-curtain"></div>
@@ -326,7 +463,7 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 </div>
 </div>
 </div>
-<div id="music-control" style="display: none;"> 🎵 </div>
+<div id="music-control" style="display: none;">  🎵  </div>
 <main id="magazine-content" style="visibility: hidden;">
 <section id="cover-page" class="page">
 <canvas id="particle-canvas"></canvas>
@@ -352,8 +489,8 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 <p class="animated delay-2">Từ những khoảnh khắc đời thường đến những dịp đặc biệt, thần thái và gu thẩm mỹ của mẹ luôn là nguồn cảm hứng bất tận.</p>
 </div>
 <div class="fashion-gallery animated delay-3">
-<img src="anh/anh1.jpg" alt="Ảnh 1">
-<img src="anh/anh2.jpg" alt="Ảnh 2">
+<img src="anh/anh1.jpg" alt="Ảnh 1" data-lightbox-src="anh/anh1.jpg">
+<img src="anh/anh2.jpg" alt="Ảnh 2" data-lightbox-src="anh/anh2.jpg">
 </div>
 </div>
 </section>
@@ -364,7 +501,7 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 <div id="game-score">Điểm: 0</div>
 <div id="game-rules-popup">
 <h3>Idol Challenge</h3>
-<p>Di chuyển 🎤 để hứng quà, né bom!<br>Đạt 80 điểm để chiến thắng!</p>
+<p>Di chuyển  🎤  để hứng quà, né bom!<br>Đạt 80 điểm để chiến thắng!</p>
 <button id="startGameBtn">Bắt đầu!</button>
 </div>
 <div id="game-result">
@@ -383,6 +520,16 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 <img src="anh/anh3.jpg" alt="Ảnh fanmail" class="fanmail-image">
 </div>
 </section>
+
+<section id="letter-page" class="page">
+    <div class="page-content">
+        <div class="letter-content animated">
+            <h2 data-text-reveal>Gửi Mẹ,</h2>
+            <p id="letter-text" class="letter-text"></p>
+        </div>
+    </div>
+</section>
+
 <section id="back-cover-page" class="page">
 <div class="page-content">
 <img src="anh/anhgiadinh.jpg" alt="Ảnh gia đình" class="back-cover-image animated">
@@ -395,9 +542,29 @@ transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
 <audio id="collectSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_2b33a52239.mp3"></audio>
 <audio id="bombSound" src="https://cdn.pixabay.com/audio/2021/08/04/audio_c483740443.mp3"></audio>
 <audio id="winSound" src="https://cdn.pixabay.com/audio/2022/11/17/audio_88b22280a5.mp3"></audio>
+
+<div id="lightbox-overlay">
+    <span id="close-lightbox">&times;</span>
+    <img id="lightbox-image" src="" alt="Ảnh phóng to">
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 const mainContent = document.getElementById('magazine-content');
+
+// --- 0. NÂNG CẤP MỚI: XỬ LÝ MÀN HÌNH CHỜ ---
+const preloader = document.getElementById('preloader');
+const curtainScreen = document.getElementById('curtain-lock-screen');
+setTimeout(() => {
+    preloader.classList.add('hidden');
+    // Sau khi preloader ẩn, hiện màn rèm khóa
+    setTimeout(() => {
+        curtainScreen.classList.add('visible');
+        passwordInput.focus();
+    }, 500);
+}, 2500); // Thời gian hiển thị màn hình chờ (2.5 giây)
+
+
 // --- 1. HIỆU ỨNG CON TRỎ CHUỘT & NÂNG CẤP "ĐÈN SÂN KHẤU" ---
 const cursorDot = document.querySelector('.cursor.dot');
 const cursorOutline = document.querySelector('.cursor.outline');
@@ -427,12 +594,11 @@ document.body.appendChild(clickEffect);
 setTimeout(() => clickEffect.remove(), 500);
 });
 // --- 2. MÀN HÌNH KHÓA & NHẠC NỀN ---
-const curtainScreen = document.getElementById('curtain-lock-screen');
 const passwordInput = document.getElementById('password-input');
 const passwordBox = document.getElementById('password-box');
 const backgroundMusic = document.getElementById('backgroundMusic');
 const musicControl = document.getElementById('music-control');
-passwordInput.focus();
+// passwordInput.focus(); // Đã chuyển lên logic của preloader
 passwordInput.addEventListener('input', () => {
 if (passwordInput.value === '0901') { // Thay '0901' bằng mật khẩu bạn muốn
 curtainScreen.classList.add('open');
@@ -448,7 +614,7 @@ startParticleAnimation();
 backgroundMusic.volume = 0.4;
 backgroundMusic.play().catch(e => console.log("Trình duyệt chặn tự động phát nhạc."));
 musicControl.style.display = 'flex';
-musicControl.textContent = ' 🎵 ';
+musicControl.textContent = '  🎵  ';
 } else if (passwordInput.value.length >= 4) {
 passwordBox.classList.add('shake');
 setTimeout(() => { passwordBox.classList.remove('shake'); passwordInput.value = ''; }, 500);
@@ -456,9 +622,9 @@ setTimeout(() => { passwordBox.classList.remove('shake'); passwordInput.value = 
 });
 musicControl.addEventListener('click', () => {
 if (backgroundMusic.paused) {
-backgroundMusic.play(); musicControl.textContent = ' 🎵 ';
+backgroundMusic.play(); musicControl.textContent = '  🎵  ';
 } else {
-backgroundMusic.pause(); musicControl.textContent = ' 🔇 ';
+backgroundMusic.pause(); musicControl.textContent = '  🔇  ';
 }
 });
 // --- 3. HIỆU ỨNG KHI CUỘN TRANG & CÁC NÂNG CẤP LIÊN QUAN ---
@@ -499,6 +665,12 @@ startFanMailAnimation();
 const fanmailImage = document.querySelector('#fanmail-page .fanmail-image');
 if (fanmailImage) setTimeout(() => fanmailImage.classList.add('visible'), 500);
 }
+
+// NÂNG CẤP MỚI: Kích hoạt animation viết thư
+if (entry.target.id === 'letter-page') {
+    startLetterTyping();
+}
+
 } else {
 // Tùy chọn: reset animation khi ra khỏi màn hình
 // entry.target.classList.remove('is-visible');
@@ -581,7 +753,7 @@ startGame();
 function startGame() {
 score = 0; items = [];
 scoreEl.textContent = `Điểm: ${score}`;
-player = { x: canvas.width / 2 - 25, y: canvas.height - 70, width: 50, height: 60, emoji: ' 🎤 ' };
+player = { x: canvas.width / 2 - 25, y: canvas.height - 70, width: 50, height: 60, emoji: '  🎤  ' };
 gameLoopId = setInterval(gameLoop, 1000/60);
 }
 function gameLoop() {
@@ -590,7 +762,7 @@ updateGame();
 drawGame();
 }
 function spawnItem() {
-const itemTypes = [{ emoji: ' ❤️ ', value: 5, type: 'good' }, { emoji: ' ⭐ ', value: 10, type: 'good' }, { emoji: ' 💣 ', value: -15, type: 'bad' }];
+const itemTypes = [{ emoji: '  ❤️  ', value: 5, type: 'good' }, { emoji: '  ⭐  ', value: 10, type: 'good' }, { emoji: '  💣  ', value: -15, type: 'bad' }];
 const type = itemTypes[Math.floor(Math.random() * itemTypes.length)];
 items.push({ x: Math.random() * (canvas.width - 40), y: -40, size: 40, speed: 2 + Math.random() * 3, ...type });
 }
@@ -714,7 +886,7 @@ clearInterval(fireworkInterval);
 function startFanMailAnimation() {
 const messageArea = document.querySelector('.message-area');
 if (!messageArea || messageArea.children.length > 0) return;
-const messages = [{ text: "Hi Mom!", sticker: false }, { text: " 🥰 ", sticker: true }, { text: "Chúc mẹ một ngày 20/10 thật nhiều niềm vui và hạnh phúc ạ!", sticker: false }, { text: "Mẹ mãi là người phụ nữ tuyệt vời nhất trong lòng con! Yêu mẹ! ❤️ ", sticker: false }];
+const messages = [{ text: "Hi Mom!", sticker: false }, { text: "  🥰  ", sticker: true }, { text: "Chúc mẹ một ngày 20/10 thật nhiều niềm vui và hạnh phúc ạ!", sticker: false }, { text: "Mẹ mãi là người phụ nữ tuyệt vời nhất trong lòng con! Yêu mẹ!  ❤️  ", sticker: false }];
 let delay = 500;
 messages.forEach(msg => {
 setTimeout(() => {
@@ -728,9 +900,9 @@ delay += 1500;
 });
 }
 // ===============================================
-// === KHU VỰC CODE CỦA CÁC NÂNG CẤP MỚI ===
+// === KHU VỰC CODE CỦA CÁC NÂNG CẤP CŨ & MỚI ===
 // ===============================================
-// NÂNG CẤP 1: HIỆU ỨNG KIM TUYẾN
+// NÂNG CẤP 1 (Cũ): HIỆU ỨNG KIM TUYẾN
 function startParticleAnimation() {
 const canvas = document.getElementById('particle-canvas');
 if(!canvas) return;
@@ -781,7 +953,7 @@ requestAnimationFrame(animateParticles);
 initParticles();
 animateParticles();
 }
-// NÂNG CẤP 2: HIỆU ỨNG NAM CHÂM
+// NÂNG CẤP 2 (Cũ): HIỆU ỨNG NAM CHÂM
 function handleMagneticEffect(element, event, force) {
 if (!element || window.innerWidth < 768) return; // Không chạy trên mobile
 const rect = element.getBoundingClientRect();
@@ -803,6 +975,58 @@ element.style.transform = 'translate(0, 0) scale(1)';
 cursorOutline.style.transform = `translate(-50%, -50%) scale(1)`;
 }
 }
+
+// NÂNG CẤP MỚI 3: LOGIC CHO LIGHTBOX
+const lightbox = document.getElementById('lightbox-overlay');
+const lightboxImage = document.getElementById('lightbox-image');
+const closeLightboxBtn = document.getElementById('close-lightbox');
+const galleryImages = document.querySelectorAll('.fashion-gallery img');
+
+galleryImages.forEach(img => {
+    img.addEventListener('click', () => {
+        const imgSrc = img.getAttribute('data-lightbox-src');
+        lightboxImage.setAttribute('src', imgSrc);
+        lightbox.classList.add('visible');
+    });
+});
+
+function closeLightbox() {
+    lightbox.classList.remove('visible');
+}
+
+closeLightboxBtn.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) { // Chỉ đóng khi click vào nền
+        closeLightbox();
+    }
+});
+
+// NÂNG CẤP MỚI 4: LOGIC HIỆU ỨNG VIẾT THƯ
+let letterTyped = false;
+function startLetterTyping() {
+    if (letterTyped) return; // Chỉ chạy 1 lần
+    letterTyped = true;
+
+    const letterElement = document.getElementById('letter-text');
+    const text = "Nhân ngày 20/10, con chúc mẹ luôn trẻ trung, xinh đẹp và rạng rỡ như đóa hoa. Cảm ơn mẹ đã luôn là hậu phương vững chắc cho con. Yêu mẹ rất nhiều!";
+    let i = 0;
+    letterElement.innerHTML = ''; // Xóa nội dung cũ
+
+    function type() {
+        if (i < text.length) {
+            let currentText = text.substring(0, i + 1);
+            letterElement.innerHTML = `${currentText}<span class="cursor-blink"></span>`;
+            i++;
+            setTimeout(type, 80); // Tốc độ gõ chữ (ms)
+        } else {
+            // Khi gõ xong, bỏ con trỏ
+            letterElement.innerHTML = text;
+        }
+    }
+    setTimeout(type, 1000); // Bắt đầu gõ sau 1 giây
+}
+
+
 });
 </script>
 </body>
